@@ -4,11 +4,11 @@
 https://shanfeng606.github.io/vuepress-test/
 
 
-## [HTML](./HTML)
-## [CSS](./CSS)
-## [原生JS](./原生JS)
-## [DOM](./DOM)
-## [HTTP+浏览器](./HTTP+浏览器)
-## [Vue](./Vue)
-## [安全](./安全)
-## [其他](./其他)
+## [HTML](./HTML.md)
+## [CSS](./CSS.md)
+## [原生JS](./原生JS.md)
+## [DOM](./DOM.md)
+## [HTTP+浏览器](./HTTP+浏览器.md)
+## [Vue](./Vue.md)
+## [安全](./安全.md)
+## [其他](./其他.md)
