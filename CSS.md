@@ -1,8 +1,12 @@
 ## CSS
 
-### 两种盒模型
+### 两种盒模型box-sizing
 
-content-box   border-box(包含边框，内边距)
+**content-box **  默认值，其中设置的width 和height是只包含了内容的宽高（content）,但不包含内边距（padding）、边框（border）、外边距（margin）
+
+**border-box** 其中设置的width和height是包含内容（content）、和padding、border**但是不包含margin**
+
+
 
 ### 如何垂直居中⭐
 
@@ -99,6 +103,14 @@ ID选择器100
      zoom: 1; /* IE 兼容*/
  }
 ```
+
+### 解释一下 CSS 里的两个单位：`em` 和 `rem`
+
+1em，等于本元素的字体大小，所以在不同的元素里1em的绝对大小是不一样的。
+而1rem，等于根元素的字体大小，在一个页面中，无论在哪个元素上1rem都是一样的。
+em 适合于用在需要大小需要跟随字体变化的属性上，比如padding、margin、height、width等等，元素继承了不同的字体大小，这些属性最好也能跟着变化；
+
+rem适用于字体，这样就可以通过改变根元素的字体大小来改变整个页面的字体大小。
 
 
 

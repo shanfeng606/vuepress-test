@@ -34,6 +34,31 @@ width：控制 viewport 的大小,如 device-width 为设备的宽度
 
 maximum-scale=1,minimum-scale=1,即不允许用户缩放
 
+### 行内元素和块级元素的区别
+
+补充问：为什么图片能设置宽高
+
+·常见块级元素有：html、body、div、header、footer、nav、section、aside、article、p、hr、h1~h6、ul、ol、dl、form、table、tbody、thead、tfoot、tr等；
+
+·常见行内元素有：span、a、img、textarea、button、input、br、label、select、canvas、progress、cite、code、strong、em、audio、video等
+
+**而他们明显的区别是：**
+
+**块级元素**：会自动换行，在横向充满其父元素的内容区域，默认独占一行的，可修改宽高；
+
+**行内元素**：不会自动换行，行内元素左右可以有其他元素，行内元素的宽高大多是auto*auto。；
+
+**注意**：行内元素设置宽高无效（但是行内置换元素可以设置宽高，下面有详细解释）、设置上下margin无效，设置上下padding类似无效（不影响文档流排列）
+
+
+
+**另外一种分类方式：可替换元素和不可替换元素的分类**
+
+**替换元素**：替换元素根据其标签和属性来决定元素的具体显示内容，`<img><input><textarea><select><object>`等。替换一般有内在尺寸如img默认的src属性引用的图片的宽高，表单元素如input也有默认的尺寸。img和input的宽高可以设定。
+
+**不可替换元素**：即将内容直接表现给用户端。
+
+**注意**：几乎大部分的替换元素都是行内元素，所以说如`input`、`img`、`textarea`是行内元素但是是可以设置宽高的说法。
 
 
 ### 你用过哪些 HTML 5 标签？
