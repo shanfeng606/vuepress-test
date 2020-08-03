@@ -45,11 +45,15 @@ right: 0;
 
 ### flex 怎么用，常用属性有哪些？
 
-Flex属性  `flex-grow`，`flex-shrink`，和 `flex-basis` 属性
+Flex属性  `flex-grow`（放大比例），`flex-shrink`(缩小比例)，和 `flex-basis` (占据空间) 属性
 
-justify-content：`stretch` `flex-start`  `center`  `space-around` `space-between`
+```css
+justify-content: flex-start | flex-end | center | space-around | space-between
+align-items: stretch | flex-start | flex-end | center
+flex-wrap: nowrap | wrap | wrap-reverse;
+```
 
-align-items : stretch    flex-start    flex-end  center
+
 
 
 
@@ -103,6 +107,9 @@ ID选择器100
      zoom: 1; /* IE 兼容*/
  }
 ```
+其他方法：**父级div定义overflow:hidden，定义overflow:auto当内部超出时会有滚动条**
+
+
 
 ### 解释一下 CSS 里的两个单位：`em` 和 `rem`
 
@@ -115,6 +122,112 @@ rem适用于字体，这样就可以通过改变根元素的字体大小来改�
 
 
 ### 圣杯布局和双飞翼布局  ⭐
+**圣杯布局**
+
+```html
+<div id="header"></div>
+<div id="container">
+  <div id="center" class="column"></div>
+  <div id="left" class="column"></div>
+  <div id="right" class="column"></div>
+</div>
+<div id="footer"></div>
+```
+
+```css
+body {
+  min-width: 550px;
+}
+
+#container {
+  padding-left: 200px; 
+  padding-right: 150px;
+}
+
+#container .column {
+  float: left;
+}
+
+#center {
+  width: 100%;
+}
+
+#left {
+  width: 200px; 
+  margin-left: -100%;
+  position: relative;
+  right: 200px;
+}
+
+#right {
+  width: 150px; 
+  margin-right: -150px; 
+}
+
+#footer {
+  clear: both;
+}
+```
+
+
+
+**双飞翼布局**
+
+```html
+<body>
+  <div id="header"></div>
+  <div id="container" class="column">
+    <div id="center"></div>
+  </div>
+  <div id="left" class="column"></div>
+  <div id="right" class="column"></div>
+  <div id="footer"></div>
+<body>
+```
+
+```css
+body {
+  min-width: 500px;
+}
+
+#container {
+  width: 100%;
+}
+
+.column {
+  float: left;
+}
+        
+#center {
+  margin-left: 200px;
+  margin-right: 150px;
+}
+        
+#left {
+  width: 200px; 
+  margin-left: -100%;
+}
+        
+#right {
+  width: 150px; 
+  margin-left: -150px;
+}
+        
+#footer {
+  clear: both;
+}
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
