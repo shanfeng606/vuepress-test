@@ -12,4 +12,6 @@ https://shanfeng606.github.io/vuepress-test/
 ## [HTTP+浏览器](./HTTP+浏览器.md)
 ## [Vue](./Vue.md)
 ## [安全](./安全.md)
+## [编程题](./编程题.md)
+## [手写题](./手写题.md)
 ## [其他](./其他.md)
