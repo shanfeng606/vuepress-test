@@ -16,7 +16,9 @@
 
 ### Doctype
 
-Doctype声明于文档最前面，告诉浏览器以何种方式来渲染页面，这里有两种模式，严格模式和混杂模式。 严格模式的排版和JS运作模式是 以该浏览器支持的最高标准运行。  混杂模式，向后兼容，模拟老式浏览器，防止浏览器无法兼容页面。
+Doctype声明于文档最前面，告诉浏览器以何种方式来解析文档，这里有两种模式，**标准模式**和**兼容模式**。
+
+在标准模式下，浏览器的解析规则都是按照最新的标准进行解析的。而在兼容模式下，浏览器会以向后兼容的方式来模拟老式浏览器的行为，以保证一些老的网站的正确访问。
 
 
 
@@ -25,8 +27,12 @@ Doctype声明于文档最前面，告诉浏览器以何种方式来渲染页面�
  `<meta>` 元素可提供有关页面的元信息（meta-information），比如页面的描述和关键词，利于搜索引擎检索。
 
 ```
-<meta name=”description” content=”不超过150个字符”/>       页面描述
- <meta name=”keywords” content=””/>      页面关键词者
+页面描述
+<meta name=”description” content=”不超过150个字符”/> 
+页面关键词者
+<meta name=”keywords” content=””/>     
+网页作者
+<meta name=”author” content=”name, email@gmail.com”/>    
 ```
 
 **meta viewport 是做什么用的，怎么写？**
@@ -47,15 +53,15 @@ maximum-scale=1,minimum-scale=1,即不允许用户缩放
 
 补充问：为什么图片能设置宽高
 
-·常见块级元素有：html、body、div、header、footer、nav、section、aside、article、p、hr、h1~h6、ul、ol、dl、form、table、tbody、thead、tfoot、tr等；
+·常见块级元素有：`html、body、div、header、footer、nav、section、aside、article、p、hr、h1~h6、ul、ol、dl、form、table、tbody、thead、tfoot、tr`等。
 
-·常见行内元素有：span、a、img、textarea、button、input、br、label、select、canvas、progress、cite、code、strong、em、audio、video等
+·常见行内元素有：`span、a、img、textarea、button、input、br、label、select、canvas、progress、cite、code、strong、em、audio、video`等。
 
 **而他们明显的区别是：**
 
-**块级元素**：会自动换行，在横向充满其父元素的内容区域，默认独占一行的，可修改宽高；
+**块级元素**：会自动换行，在横向充满其父元素的内容区域，默认独占一行的，可修改宽高。
 
-**行内元素**：不会自动换行，行内元素左右可以有其他元素，行内元素的宽高大多是auto*auto。
+**行内元素**：不会自动换行，行内元素左右可以有其他元素，行内元素的宽高大多是`auto*auto`。
 
 **注意**：行内元素设置宽高无效（但是行内置换元素可以设置宽高，下面有详细解释）、设置上下margin无效，设置上下padding类似无效（不影响文档流排列）
 
@@ -99,6 +105,24 @@ footer 页脚
 
 
 
+### `<img>`的`title`和`alt`有什么区别
+
+1. `title`是[全局属性，用于为元素提供附加的 提示信息。通常当鼠标滑动到元素上的时候显示。
+2. `alt`是`<img>`的特有属性，是图片内容的等价描述，用于图片无法加载时显示。可提图片高可访问性，除了纯装饰图片外都必须设置有意义的值，搜索引擎会重点分析。
+
+
+
+### script标签的async 和 defer 的作用是什么？有什么区别？
+
+* 脚本没有 defer 或 async，浏览器会立即加载并执行指定的脚本，也就是说不等待后续载入的文档元素，读到就加载并执
+  行。
+
+* defer 属性表示延迟执行引入的 JavaScript，即这段 JavaScript 加载时 HTML 并未停止解析，这两个过程是并行的。
+  当整个 document 解析完毕后再执行脚本文件，在 DOMContentLoaded 事件触发之前完成。多个脚本按顺序执行。
+
+* async 属性表示异步执行引入的 JavaScript，与 defer 的区别在于，如果已经加载好，就会开始执行，也就是说它的执
+  行仍然会阻塞文档的解析，只是它的加载过程不会阻塞。多个脚本的执行顺序无法保证。
+
 
 
 ### 如何进行响应式开发
@@ -107,3 +131,6 @@ footer 页脚
 - 使用媒体查询根据不同的视口宽度调整样式  @media 
 - 使用流式布局来保证布局会随着视口宽度的改变进行调整
 - 调整 meta viewport，避免浏览器使用虚拟 viewport
+
+
+
