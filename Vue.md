@@ -12,37 +12,9 @@ MVVM 的核心是 ViewModel 层，它就像是一个中转站，负责转换 Mod
 
 
 
-### MVC与MVVM区别
-
-**MVC**(单向通信)
-
-* `View` 传送指令到 `Controller`
-
-* `Controller` 完成业务逻辑后，要求 `Model` 改变状态
-
-* `Model` 将新的数据发送到 `View`，用户得到反馈
-
-![img](https://upload-images.jianshu.io/upload_images/2376645-920ecb14e5f74278.png?imageMogr2/auto-orient/strip|imageView2/2/w/434/format/webp)
-
-**MVVM**(双向通信)
-
-又称状态机制，`View`和`ViewModel` 是进行绑定的，`View`的变动，自动反映在 `ViewModel`，反之亦然。
-
-而`View` 会把事件传递给`ViewModel`，`ViewModel`去对`Model`**进行操作并接受更新**。
-
-![img](https://upload-images.jianshu.io/upload_images/2376645-66197c4cd472faf2.png?imageMogr2/auto-orient/strip|imageView2/2/w/434/format/webp)
-
-
-
 
 
 ### watch 和 computed 和 methods 区别是什么？
-
-**computed 和 methods**
-
-`computed`是计算属性，`methods`是方法，都可以实现对 data 中的数据加工后再输出。不同的是 `computed` 计算属性是基于它们的依赖进行缓存的。计算属性 `computed` 只有在它的相关依赖发生改变时才会重新求值。
-
-数据量大，需要缓存的时候用 `computed` ；每次确实需要重新加载，不需要缓存时用 `methods` 。
 
 **computed和watch的区别**
 
@@ -64,47 +36,184 @@ watch:
 
 
 
+**computed 和 methods**
+
+`computed`是计算属性，`methods`是方法，都可以实现对 data 中的数据加工后再输出。不同的是 `computed` 计算属性是基于它们的依赖进行缓存的， 只有在它的相关依赖发生改变时才会重新求值。
+
+数据量大，需要缓存的时候用 `computed` ；每次确实需要重新加载，不需要缓存时用 `methods` 。
+
+
+
+
+
 ### Vue 有哪些生命周期钩子函数？分别有什么用？
 
-beforeCreate  钩子函数调用时，是获取不到props或者data中的数据的，因为这些数据初始化都在initState中
+* **beforeCreate**  是new Vue()之后触发的第一个钩子，在当前阶段data、methods、computed以及watch上的数据和方法都不能被访问。
 
-created   这一步可以访问之前不能访问的数据（data跟methods），但这时候组件还没有被挂载，所以是看不到的
+* **created**   在实例创建完成后发生，当前阶段已经完成了数据观测，也就是可以使用数据，更改数据，在这里更改数据不会触发updated函数。可以做一些初始数据的获取，在当前阶段无法与Dom进行交互，如果非要想，可以通过vm.$nextTick来访问Dom。
 
-beforeMount   
+* **beforeMount**   发生在挂载之前，当前阶段虚拟Dom已经创建完成，即将开始渲染。在此时也可以对数据进行更改，不会触发updated。
 
-mounted（实例挂载到 DOM上，此时可以通过 DOM API 获取到 DOM 节点，$el 属性可以访问。）
+* **mounted**   真实的Dom挂载完毕，数据完成双向绑定，可以访问到Dom节点，使用$refs属性对Dom进行操作。
 
-beforeUpdate   数据更新时会调用的钩子函数,此时虽然响应式数据更新了，但是对应的真实 DOM 还没有被渲染
+* **beforeUpdate **  数据更新时会调用的钩子函数，此时虽然响应式数据更新了，但是对应的真实 DOM 还没有被渲染
 
-updated    此时 DOM 已经根据响应式数据的变化更新了。
+* **updated**    此时 DOM 已经根据响应式数据的变化更新了。
 
-beforeDestroy（还没真正被销毁，所有的data，methods，指令，过滤器。。。仍可用）
+* **beforeDestroy**    发生在实例销毁之前，这时进行善后收尾工作，比如清除计时器。
 
-destroyed    Vue 实例指示的所有东西都会解绑定，所有的事件监听器会被移除，所有的子实例也会被销毁。
+* **destroyed**    Vue 实例指示的所有东西都会解绑定，所有的事件监听器会被移除，所有的子实例也会被销毁。
+
+
+
+
+
+### **Vue中组件生命周期调用顺序说一下**
+
+组件的调用顺序都是`先父后子`,渲染完成的顺序是`先子后父`。
+
+组件的销毁操作是`先父后子`，销毁完成的顺序是`先子后父`。
+
+**加载渲染过程**
+
+`父beforeCreate -> 父created-> 父beforeMount-> 子beforeCreate-> 子created-> 子beforeMount- > 子mounted-> 父mounted`
+
+**子组件更新过程**
+
+`父beforeUpdate->子beforeUpdate->子updated->父updated`
+
+**父组件更新过程**
+
+`父 beforeUpdate -> 父 updated`
+
+**销毁过程**
+
+`父beforeDestroy->子beforeDestroy->子destroyed->父destroyed`
+
+
+
+
 
 
 
 ### Vue 如何实现组件间通信？⭐ 
 
-https://juejin.im/post/5cde0b43f265da03867e78d3
+**方法一：`props`/`$emit`**
 
-父子：父组件A通过v-on传递数据，子组件B通过props接收父组件A传递的数据， B 组件中通过 $emit 向父组件通信
+父组件A通过props的方式向子组件B传递，B to A 通过在 B 组件中 $emit, A 组件中 v-on 的方式实现。
 
-爷孙：使用两次 v-on 通过爷爷爸爸通信，爸爸儿子通信实现爷孙通信
+**方法二：eventBus**
 
-祖先对所有后代：provide/inject
+`eventBus` 又称为事件总线，在vue中可以使用它来作为沟通桥梁的概念, 就像是所有组件共用相同的事件中心，可以向该中心注册发送事件或接收事件， 所以组件都可以通知其他组件。
 
-任意组件：使用 eventBus = new Vue() 来通信，eventBus.$on 和 eventBus.$emit 是主要API
+创建一个eventBus
 
-任意组件：使用 Vuex 通信
+```js
+import Vue from 'vue'
+export const EventBus = new Vue()
+//在要用的组件中导入
+import {EventBus} from './event-bus.js'
+```
+
+发送事件
+
+```js
+methods:{
+    additionHandle(){
+      EventBus.$emit('addition', {
+        num:this.num++
+      })
+    }
+  }
+```
+
+接受事件
+
+```js
+mounted() {
+    EventBus.$on('addition', param => {
+      this.count = this.count + param.num;
+    })
+  }
+```
+
+**方法三：`provide`/`inject`**
+
+```
+// A.vue
+export default {
+  provide: {
+    name: '传递内容'
+  }
+}
+```
+
+```
+// B.vue
+export default {
+  inject: ['name'],
+  mounted () {
+    console.log(this.name);  // 传递内容
+  }
+}
+```
+
+**方法四：Vuex**
+
+**方法五：`$children` / `$parent`**
 
 
 
-### Vue 数据响应式怎么做到的？
+### Vuex是什么？
 
-同vue的双向绑定原理
+Vuex 是一个专为 Vue.js 应用程序开发的**状态管理模式**。
 
-`vue`是通过`Object.defineProperty()`来实现数据劫持的。
+核心概念：State  Getter Mutation Action Moudle
+
+**state** => 提供唯一的公共数据源，所有共享的数据都要统一放到Store的state中进行储存。`this.$store.state.名称`
+**getters** => 用于对store中的数据进行加工处理形成新的数据，类似于Vue中的计算属性，当store中数据发生变化时，getter也会发生变化`this.$store.getters.名称`
+
+**mutations** => 提交更改数据的方法，同步！`this.$store.commit('add')`    --只能通过mutation变更Store数据，不可以直接操作Store的数据
+**actions** => 像一个装饰器，包裹mutations，使之可以异步。 `this.$store.dispatch('add')`
+**modules** => 模块化Vuex
+
+
+
+
+
+
+
+### MVC与MVVM区别⭐ 
+
+**MVC**(单向通信)
+
+* `View` 传送指令到 `Controller`
+
+* `Controller` 完成业务逻辑后，要求 `Model` 改变状态
+
+* `Model` 将新的数据发送到 `View`，用户得到反馈
+
+![img](https://upload-images.jianshu.io/upload_images/2376645-920ecb14e5f74278.png?imageMogr2/auto-orient/strip|imageView2/2/w/434/format/webp)
+
+**MVVM**(双向通信)
+
+MVVM是`Model-View-ViewModel`缩写，也就是把`MVC`中的`Controller`演变成`ViewModel`。Model层代表数据模型，View代表UI组件，ViewModel是View和Model层的桥梁。`View`和`ViewModel` 是进行绑定的，`View`的变动，自动反映在 `ViewModel`，反之亦然。
+
+而`View` 会把事件传递给`ViewModel`，`ViewModel`去对`Model`**进行操作并接受更新**。从而实现双向通信。
+
+![img](https://upload-images.jianshu.io/upload_images/2376645-66197c4cd472faf2.png?imageMogr2/auto-orient/strip|imageView2/2/w/434/format/webp)
+
+
+
+
+
+
+
+
+
+### Vue 数据响应式怎么做到的？⭐ 
+
+Vue在初始化数据时，会使用**`Object.defineProperty`**重新定义data中的所有属性，当页面使用对应属性时，首先会进行依赖收集(收集当前组件的`watcher`)如果属性发生变化会通知相关依赖进行更新操作(`发布订阅`)。
 
 要点
 
@@ -153,11 +262,72 @@ this.someObject = Object.assign({}, this.someObject, { a: 1, b: 2 })
 
 
 
+### Vue的单向数据流
+
+**数据从父级组件传递给子组件，只能单向绑定**
+
+父级 `prop` 的更新会向下流动到子组件中，但是反过来则不行。这样会防止从子组件意外改变父级组件的状态
+
+**子组件内部不能直接修改从父级传递过来的数据**。
+
+这个 `prop` 用来传递一个初始值；这个子组件接下来希望将其作为一个本地的 `prop` 数据来使用。在这种情况下，最好定义一个本地的 `data` 属性并将这个 `prop` 用作其初始值：
+
+
+
+
+
+### Vue的slot的理解
+
+Vue的插槽slot，分为3种
+
+- 匿名插槽   （默认）
+- 具名插槽    `<slot name="xxx"></slot>`  `<template v-slot:xxx></templete>`
+- 作用域插槽
+
+前两种很好理解，无论就是子组件里定义一个slot占位符，父组件调用时，在slot对应的位置填充模板就好了。
+
+作用域插槽的慨念，文档却只有一句简单的描述
+
+**有的时候你希望提供的组件带有一个可从子组件获取数据的可复用的插槽。**
+
+
+
+### **keep-alive了解吗**
+
+`keep-alive`是`vue2.0`加入的一个特性， 能缓存某个组件，或者某个路由。
+
+1、节省性能消耗，避免一个组件频繁重新渲染，节省开支
+
+2、保存用户状态，比如说：我们在填写收货地址的页面，需要跳转到另一个页面通过定位选择地址信息再返回继续填写，这时候需要缓存收货地址页面，避免跳转页面导致用户数据丢失。
+
+**他有2个属性**
+
+- include - 字符串或正则表达，只有匹配的组件会被缓存
+- exclude - 字符串或正则表达式，任何匹配的组件都不会被缓存
+
+```html
+<keep-alive include="a">
+  <component>
+    <!-- name 为 a 的组件将被缓存！ -->
+  </component>
+</keep-alive>
+```
+
+**钩子函数**
+
+我们都知道`vue`组件的生命周期会触发`beforeCreate、created 、beforeMount、 mounted`这些钩子函数，但是被缓存的组件或者页面在第一次渲染之后，再次进入不会再触发上面的钩子函数了，而是触发`activated`钩子函数，可以将逻辑放到这里面去做。
+
+同理：离开缓存组件的时候，`beforeDestroy和destroyed`并不会触发，可以使用`deactivated`离开缓存组件的钩子来代替。
+
+
+
+
+
 ### v-show与v-if区别⭐ 
 
 `v-show` 只是在 `display: none` 和 `display: block` 之间切换。无论初始条件是什么都会被渲染出来，后面只需要切换 CSS，DOM 还是一直保留着的。所以总的来说 `v-show` 在初始渲染时有更高的开销，但是切换开销很小，更适合于频繁切换的场景。
 
-`v-if` 的话就得说到 Vue 底层的编译了。当属性初始为 `false` 时，组件就不会被渲染，直到条件为 `true`，并且切换条件时会触发销毁/挂载组件，所以总的来说在切换时开销更高，更适合不经常切换的场景。
+`v-if` 的话，当属性初始为 `false` 时，组件就不会被渲染，直到条件为 `true`，并且切换条件时会触发销毁/挂载组件，所以总的来说在切换时开销更高，更适合不经常切换的场景。
 
 
 
@@ -167,27 +337,16 @@ ref="domName"   用法;this.$refs.domName
 
 
 
-### 为什么要使用key？
-
-需要使用key来给每个节点做一个唯一标识，diff算法就可以正确的识别此节点。
-
-**作用主要是为了更高效的更新虚拟DOM**
-
-diff的比较方式:
-
-当页面的数据发生变化时，Diff算法只会比较同一层级的节点：
-
-**如果节点类型不同，直接干掉前面的节点，再创建并插入新的节点，不会再比较这个节点以后的子节点了。**
-
-**如果节点类型相同，则会重新设置该节点的属性，从而实现节点的更新。**
 
 
 
-### v-model的使用。
+
+### v-model的原理
 
 v-model用于表单数据的双向绑定，其实它就是一个语法糖，这个背后就做了两个操作：
-v-bind绑定一个value属性；
-v-on指令给当前元素绑定input事件。
+
+* 给当前元素绑定一个`value`属性；
+* 给当前元素绑定`input`事件。
 
 ```html
 <input type="text"   :value="price"   @input="price=$event.target.value">
@@ -197,37 +356,55 @@ v-on指令给当前元素绑定input事件。
 
 
 
-### Vuex是什么？
-
-Vuex 是一个专为 Vue.js 应用程序开发的**状态管理模式**。
-
-核心概念：State  Getter Mutation Action Moudle
-
-**state** => 提供唯一的公共数据源，所有共享的数据都要统一放到Store的state中进行储存。`this.$store.state.名称`
-**getters** => 用于对store中的数据进行加工处理形成新的数据，类似于Vue中的计算属性，当store中数据发生变化时，getter也会发生变化`this.$store.getters.名称`
-
-**mutations** => 提交更改数据的方法，同步！`this.$store.commit('add')`    --只能通过mutation变更Store数据，不可以直接操作Store的数据
-**actions** => 像一个装饰器，包裹mutations，使之可以异步。 `this.$store.dispatch('add')`
-**modules** => 模块化Vuex
 
 
 
 
+### Vue Router
+
+单页面跳转
+
+https://router.vuejs.org/zh/guide/#html
 
 
 
-###  NextTick⭐ 
+###  NextTick的理解⭐ 
 
 当你修改了data的值然后马上获取这个dom元素的值，是不能获取到更新后的值，
 你需要使用`$nextTick`这个回调，让修改后的data值渲染更新到dom元素之后在获取，才能成功。
 
+使用
+
+```js
+<button @click="change()">按钮</button><h1 ref="gss">{{msg}}</h1>
+//JS
+export default{
+    name:"app",
+    data(){
+        return {
+            msg:"123"
+        }
+    },
+    methods:{
+        change(){
+            this.msg = "456";
+            console.log(this.refs["gss"].innerHTML)//123
+            this.$nextTick(function(){
+                console.log(this.refs["gss"].innerHTML)//456
+            })
+        }
+    }
+    
+}
+```
 
 
-### vue组件中data为什么必须是一个函数？
 
-因为JavaScript的特性所导致，在component中，data必须以函数的形式存在，不可以是对象。
 
-组件中的data写成一个函数，数据以函数返回值的形式定义，这样每次复用组件的时候，都会返回一份新的data，相当于每个组件实例都有自己私有的数据空间，它们只负责各自维护的数据，不会造成混乱。而单纯的写成对象形式，就是所有的组件实例共用了一个data，这样改一个全都改了。
+
+### data为什么必须是一个函数？
+
+一个组件被复用多次的话，也就会创建多个实例。本质上，**这些实例用的都是同一个构造函数**。如果data是对象的话，对象属于引用类型，改动一个实例会影响到其他所有的实例。所以为了保证组件不同的实例之间data不冲突，data必须是一个函数。。
 
 
 
@@ -238,3 +415,160 @@ Vuex 是一个专为 Vue.js 应用程序开发的**状态管理模式**。
 .capture：与事件冒泡的方向相反，事件捕获由外到内；
 .self：只会触发自己范围内的事件，不包含子元素；
 .once：只会触发一次。
+
+
+
+
+
+### Vue单页面应用（SPA）
+
+> 单页面应用(SPA)
+
+指一个系统只加载一次资源，然后下面的操作交互、数据交互是通过router、ajax来进行，页面并没有刷新；
+
+Vue只有一个html页面，跳转的方式是组件之间的切换
+
+优点：**页面切换快**（页面每次切换跳转时，并不需要做`html`文件的请求，这样就节约了很多`http`发送时延）
+
+缺点：**首屏时间慢**（首屏时需要请求一次`html`，同时还要发送一次`js`请求，两次请求回来了，首屏才会展示出来。相对于多页应用，首屏时间慢。），**SEO差**（搜索引擎只认识`html`里的内容，不认识`js`的内容，而单页应用的内容都是靠`js`渲染生成出来的，搜索引擎不识别这部分内容）
+
+
+
+> 多页应用(MPA)
+
+每一次页面跳转的时候，后台服务器都会给返回一个新的`html`文档，这种类型的网站也就是多页网站，也叫做多页应用。
+
+优点：首屏时间快，SEO效果好
+
+缺点：页面切换慢
+
+
+
+
+
+### Vue监测数组和对象的变化
+
+由于 JavaScript 的限制，Vue **不能检测**数组和对象的变化。尽管如此我们还是有一些办法来回避这些限制并保证它们的响应性。
+
+**对于对象**
+
+对于已经创建的实例，Vue 不允许动态添加根级别的响应式 property。但是，可以使用 **`Vue.set(object, propertyName, value)`** 方法向嵌套对象添加响应式 property。例如，对于：
+
+```
+Vue.set(vm.someObject, 'b', 2)
+```
+
+还可以使用 `vm.$set` 实例方法，这也是全局 `Vue.set` 方法的别名：
+
+```
+this.$set(this.someObject,'b',2)
+```
+
+**对于数组**
+
+Vue 不能检测以下数组的变动：
+
+* 当你利用索引直接设置一个数组项时，例如：`vm.items[indexOfItem] = newValue`
+
+解决办法：
+
+```
+// Vue.set
+Vue.set(vm.items, indexOfItem, newValue)
+```
+
+```
+// Array.prototype.splice
+vm.items.splice(indexOfItem, 1, newValue)
+```
+
+
+
+* 当你修改数组的长度时，例如：`vm.items.length = newLength`
+
+解决办法
+
+```
+vm.items.splice(newLength)
+```
+
+
+
+
+
+### 虚拟DOM
+
+**虚拟DOM**简单讲就是讲真实的dom节点用JavaScript来模拟出来，而Dom变化的对比，放到 Js 层来做
+
+具体讲，就是把真实的DOM操作放在内存当中，在内存中的对象里做模拟操作。
+
+当页面打开时浏览器会解析HTML元素，构建一颗DOM树，将状态全部保存起来，在内存当中模拟我们真实的DOM操作，操作完后又会生成一颗dom树，再根据diff算法比较两颗DOM树不同的地方，只渲染一次不同的地方。
+
+
+
+**优点：**
+
+- **保证性能下限：**框架的虚拟 DOM 需要适配任何上层 API 可能产生的操作，他的一些 DOM 操作的实现必须是普通的，所以它的性能并不是最优的；但是比起粗暴的 DOM 操作性能要好很多，因此框架的虚拟 DOM 至少可以保证在你不需要手动优化的情况下，依然可以提供还不错的性能，即保证性能的下限。
+- **无需手动操作 DOM：**我们不再需要手动去操作 DOM ，只需要写好 View-Model 的代码逻辑，框架会根据虚拟 DOM 和数据双向绑定，帮我们以可预期的方式更新视图，极大提高我们的开发效率。
+- **跨平台：**虚拟 DOM 本质上是 javascript 对象，而 DOM 与平台强相关，相比之下，虚拟 DOM 可以进行更方便的跨平台操作，例如服务器渲染、weex 开发等等。
+
+**缺点：**
+
+- **无法进行极致优化：**虽然虚拟 DOM + 合理的优化，足以应对绝大部分应用的性能需求，但在一些性能要求极高的应用中，虚拟 DOM 无法进行针对性的极致优化。比如 VScode 采用直接手动操作 DOM 的方式进行极端的性能优化。
+
+
+
+
+
+### Diff算法
+
+**diff算法**：找出有必要更新的节点更新，没有更新的节点就不要动
+
+内容：
+
+- 只比较同一级，不跨级比较
+- tag不相同，直接删掉重建，不再深度比较
+- tag和key，两者都相同，则认为是相同节点，不在深度比较
+
+
+
+之前在Virtual DOM中讲到当状态改变了，vue便会重新构造一棵树的对象树，然后用这个新构建出来的树和旧树进行对比。这个过程就是patch。比对得出「差异」，最终将这些「差异」更新到视图上。
+
+
+
+https://juejin.im/post/5c4a76b4e51d4526e57da225
+
+
+
+### 为什么要使用key？
+
+vue是通过比对组件自身新旧vdom进行更新的。
+
+key的作用是key来给每个节点做一个唯一标识，辅助判断新旧vdom节点在逻辑上是不是同一个对象。
+
+**作用主要是为了更高效的更新虚拟DOM**
+
+
+
+
+
+### vue-router的两种模式
+
+**hash（默认）**—— 即地址栏 URL 中的 # 符号
+
+* 原理是onhashchage事件，可以在window对象上监听这个事件
+
+```javascript
+window.onhashchange = function(event){
+  console.log(event.oldURL, event.newURL)
+  let hash = location.hash.slice(1)
+}
+```
+
+**history**
+
+- 利用了HTML5 History Interface 中新增的pushState()和replaceState()方法。
+- 需要后台配置支持。如果刷新时，服务器没有响应响应的资源，会刷出404
+
+
+
