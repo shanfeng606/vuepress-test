@@ -32,6 +32,34 @@ var a = 1
 
 
 
+### ==与===的区别
+
+"==" 就代表会先把两端的变量试图转换成相同类型，然后再比较；
+
+"===" 就代表会直接去比较类型是否相同，如果类型相同则继续比较值是否相同。
+
+
+
+==操作符的强制类型转换规则，看看就好
+
+```
+（1）字符串和数字之间的相等比较，将字符串转换为数字之后再进行比较。
+
+（2）其他类型和布尔类型之间的相等比较，先将布尔值转换为数字后，再应用其他规则进行比较。
+
+（3）null 和 undefined 之间的相等比较，结果为真。其他值和它们进行比较都返回假值。
+
+（4）对象和非对象之间的相等比较，对象先调用 ToPrimitive 抽象操作后，再进行比较。
+
+（5）如果一个操作值为 NaN ，则相等比较返回 false（ NaN 本身也不等于 NaN ）。
+
+（6）如果两个操作值都是对象，则比较它们是不是指向同一个对象。如果两个操作数都指向同一个对象，则相等操作符返回 true，否则，返回 false。
+```
+
+
+
+
+
 
 
 ### Map、WeakMap、Set、WeakSet
@@ -68,27 +96,33 @@ var a = 1
 
 
 
-###   原始类型有哪几种？null 是对象嘛？
+###   JS的数据类型及存放位置
 
-* number
+* **Number**
 
-* string
+* **string**
 
-* boolean
+* **Boolean**
 
-* null
+* **Null**
 
-* undefined
+* **Undefined**
 
-* symbol（ES6中新引入的新类型---可以用来创建匿名的对象属性）
+* **Symbol**（ES6中新引入的新类型---可以用来创建匿名的对象属性，代表创建后独一无二且不可变的数据类型，它的出现我认为主要是为了解决可能出现的全局变量冲突的问题。）
 
-* BigInt（它可以表示任意精度格式的整数）
+* **BigInt**（它可以表示任意精度格式的整数）
 
   原始类型存储的都是值，是没有函数可以调用的，`typeof null`会输出`object`，是JS存在的一个bug
 
-Object也是一种数据类型，但不是原始类型
+
 
 （一共有8种数据类型，其中7种是原始类型）
+
+
+
+栈：原始数据类型（Undefined、Null、Boolean、Number、String）
+
+堆：引用数据类型（对象、数组和函数）
 
 
 
@@ -160,7 +194,7 @@ Object.prototype.toString.call( undefined );	// "[object Undefined]"
 
 **原型**
 
-在 JavaScript 中，每个实例对象都有一个私有属性 `Prototype` ，该属性指向了这个实例对象的原型
+我们创建的每个函数都有一个 `prototype(原型)` 属性，这个属性是一个指针，指向一个对象，而这个对象的用途是包含可以由特定类型的所有实例共享的属性和方法。
 
 **原型链**
 
@@ -210,48 +244,16 @@ Object.prototype.toString.call( undefined );	// "[object Undefined]"
 
 
 
+Promise 是异步编程的一种解决方案，解决了回调地狱的问题
+
+所谓`Promise`，简单说就是一个容器，里面保存着某个未来才会结束的事件（通常是一个异步操作）的结果。
+
+**特点**
+
+* 对象的状态不受外界影响。`Promise`对象代表一个异步操作，有三种状态：`pending`（进行中）、`fulfilled`（已成功）和`rejected`（已失败）。
+* 一旦状态改变，就不会再变
 
 
-
-### Promise、Promise.all、Promise.race 怎么用
-
-* 背代码 Promise 用法
-
-```js
-function fn(){
-     return new Promise((resolve, reject)=>{
-         成功时调用 resolve(数据)
-         失败时调用 reject(错误)
-     })
- }
-fn().then(success, fail).then(success2, fail2)
-//更直观的写法
-promise.then(function(value) {
- // success
-}, function(value) {
- // failure
-});
-```
-
-* 背代码 Promise.all 用法
-
-promise1和promise2都成功才会调用success1
-
-```js
-Promise.all([promise1, promise2]).then(success1, fail1)
-```
-
-* 背代码 Promise.race 用法
-
-  promise1和promise2只要有一个成功就会调用success1；
-  promise1和promise2只要有一个失败就会调用fail1；
-  总之，谁第一个成功或失败，就认为是race的成功或失败。
-
-```js
-Promise.race([promise1, promise2]).then(success1, fail1)
-```
-
-  
 
 
 
@@ -315,9 +317,10 @@ console.log(c.get('a'))
 ```
 
 **闭包的作用**
-1.访问其他函数内部变量
+1.可以在函数外调用闭包函数，访问到函数内的变量，可以用这种方法来创建私有变量
 2.保护变量不被内存回收机制回收
-3.避免全局变量被污染 方便调用上下文的局部变量 加强封装性
+
+
 
 **闭包的缺点**
 闭包长期占用内存，内存消耗很大，可能导致内存泄露
@@ -371,19 +374,7 @@ function trim(string){
 
 
 
-### 如何实现数组去重？⭐
 
-https://www.cnblogs.com/wisewrong/p/9642264.html
-
-1、哈希
-
-2、双重 for 循环（最烂）
-
-3、for...of + indexOf()或includes()   ，创建一个空数组，元素不存在时push进去
-
-4、Array.sort()    比较相邻元素是否相等，从而排除重复项
-
-5、new Set([iterable])
 
 
 
@@ -432,3 +423,62 @@ window.onerror=function(message,source,lineNum,colNum,error){
 
 
 
+### requestAnimationFrame的优势是什么？
+
+告诉浏览器——你希望执行一个动画，并且要求浏览器在下次重绘之前调用指定的回调函数更新动画。不需要设置时间间隔，是由系统的时间间隔定义的。大多数浏览器的刷新频率是60Hz(每秒钟反复绘制60次)，循环间隔是1000/60，约等于16.7ms。不需要调用者指定帧速率，**浏览器会自行决定最佳的帧效率**。只被执行一次，这样就不会引起丢帧现象，也不会导致动画出现卡顿的问题。
+
+**语法**：
+
+```js
+window.requestanimationframe(callback);
+参数callback：下一次重绘之前更新动画帧所调用的函数(即上面所说的回调函数)。
+```
+
+**范例**
+
+```js
+var start = null;
+var element = document.getElementById('SomeElementYouWantToAnimate');
+element.style.position = 'absolute';
+
+function step(timestamp) {
+  if (!start) start = timestamp;
+  var progress = timestamp - start;
+  element.style.left = Math.min(progress / 10, 200) + 'px';
+  if (progress < 2000) {
+    window.requestAnimationFrame(step);
+  }
+}
+
+window.requestAnimationFrame(step);
+```
+
+
+
+
+
+
+
+### 说一下事件循环(Event Loop)？  node的机制有待补充
+
+`js` 是单线程的，所以一次只能执行一个任务，当一个任务需要很长时间时，主线程一直等待任务的执行完成，在执行下个任务是很浪费资源的。
+
+ 所以，`js`中任务就被分成两种，一种是同步任务，一种是异步任务。执行步骤如下图所示：
+
+![img](https://user-gold-cdn.xitu.io/2019/6/23/16b83ece9d14eab0?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
+
+为了更精细的区分任务，`js`中可以将异步任务划分为宏任务和微任务。
+**宏任务（macro-task）**: 同步 script (整体代码)，setTimeout 回调函数, setInterval 回调函数, I/O, UI rendering；
+**微任务（micro-task）**: process.nextTick, Promise 回调函数，Object.observe，MutationObserver
+
+其执行的顺序是这样的：
+
+1. 首先 JavaScript 引擎会执行一个宏任务，注意这个宏任务一般是指主干代码本身，也就是目前的同步代码
+2. 执行过程中如果遇到微任务，就把它添加到微任务任务队列中
+3. 宏任务执行完成后，立即执行当前微任务队列中的微任务，直到微任务队列被清空
+4. 微任务执行完成后，开始执行下一个宏任务
+5. 如此循环往复，直到宏任务和微任务被清空
+
+
+
+Node.js也是单线程的Event Loop，但是它的运行机制不同于浏览器环境。
