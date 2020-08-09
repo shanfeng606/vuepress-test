@@ -125,28 +125,27 @@ var a = 1
 堆：引用数据类型（对象、数组和函数）
 
 
-
 ### 判断数据类型
 
-**typeof**
+**typeof（原始数据类型）**
 
-可以判断数据类型，它返回表示数据类型的字符串（返回结果只能包括number,boolean,string,function,object,undefined）；
-
-可以使用typeof判断变量是否存在（如if(typeof a!="undefined"){...}）；
-
-Typeof 运算符的问题是无论引用的对象是什么类型    它都返回object
+它返回表示数据类型的**字符串**
 
 ```js
-typeof {} // object
-typeof  [1,2] // object
-typeof /\s/ //object
+typeof(1)                              //number
+typeof("1")                            //string
+typeof(true)                           //boolean
+typeof(undefined)                      //undefined
+typeof(null)                           //object
 ```
 
+**注释：**您也许会问，为什么 typeof 运算符对于 null 值会返回 "object"。这实际上是 JavaScript 最初实现中的一个错误，然后被 ECMAScript 沿用了。现在，null 被认为是对象的占位符，从而解释了这一矛盾，但从技术上来说，它仍然是原始值。
 
 
-**instanceof**
 
-原理 因为A instanceof B 可以判断A是不是B的实例，返回一个布尔值，由构造类型判断出数据类型
+**instanceof（引用类型）**
+
+原理 因为A instanceof B 可以判断A是不是B的实例，返回一个**布尔值**，由构造类型判断出数据类型
 
 ```js
 console.log(arr instanceof Array ); // true
@@ -157,9 +156,9 @@ console.log(fn instanceof Function ); // true
 
 
 
-**使用`Object.prototype.toString`来判断值的类型**
+**使用`Object.prototype.toString.call()`来判断值的类型**
 
-在任何值上调用`Object.prototype.toString`方法，都会返回一个 `[object NativeConstructorName]`格式的字符串。每个类在内部都有一个 `[[Class]]` 属性，这个属性中就指定了上述字符串中的构造函数名。
+可以**通用**的来判断原始数据类型和引用数据类型
 
 ```js
 Object.prototype.toString.call({name:'Jack'}) // [object Object]
@@ -185,7 +184,6 @@ Object.prototype.toString.call( undefined );	// "[object Undefined]"
 ```
 
 虽然 JavaScript 中没有`Null()`和`Undefined`构造器，但是 JavaScript 也为我们处理这这两种情况。
-
 
 
 
