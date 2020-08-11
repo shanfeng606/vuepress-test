@@ -102,6 +102,13 @@ footer 页脚
 特别的：video标签
 
 属性有：autoplay/preload:自动播放/预加载，controls控制条，muted静音
+**其他H5新特性**
+
+* 增强型表单：HTML5 拥有多个新的表单 Input 输入类型。这些新特性提供了更好的输入控制和验证。  
+
+* 视频和音频（video,audio）
+* Canvas绘图
+
 
 
 
@@ -113,15 +120,14 @@ footer 页脚
 
 
 ### script标签的async 和 defer 的作用是什么？有什么区别？
-
 * 脚本没有 defer 或 async，浏览器会立即加载并执行指定的脚本，也就是说不等待后续载入的文档元素，读到就加载并执
   行。
 
-* defer 属性表示延迟执行引入的 JavaScript，即这段 JavaScript 加载时 HTML 并未停止解析，这两个过程是并行的。
-  当整个 document 解析完毕后再执行脚本文件，在 DOMContentLoaded 事件触发之前完成。多个脚本按顺序执行。
+* defer 属性表示**延迟执行**引入的 JavaScript，即这段 JavaScript 加载时 HTML 并未停止解析，这两个过程是并行的。
+  当整个 document 解析完毕后再执行脚本文件，在 DOMContentLoaded 事件触发之前完成。多个脚本按**顺序**执行。
 
-* async 属性表示异步执行引入的 JavaScript，与 defer 的区别在于，如果已经加载好，就会开始执行，也就是说它的执
-  行仍然会阻塞文档的解析，只是它的加载过程不会阻塞。多个脚本的执行顺序无法保证。
+* async 属性表示异步执行引入的 JavaScript，与 defer 的区别在于，**如果已经加载好，就会开始执行**，也就是说它的执
+  行**仍然会阻塞文档的解析**，只是它的加载过程不会阻塞。多个脚本的执行顺序无法保证。
 
 
 

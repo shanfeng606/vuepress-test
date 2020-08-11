@@ -1,5 +1,22 @@
 ## CSS
 
+### CSS3 有哪些新特性？
+
+```
+选择器   E:last-child     E:nth-child(n)
+圆角	   border-radius:8px
+阴影     box-shadow：: 水平方向的偏移量 垂直方向的偏移量 模糊程度 扩展程度 颜色 是否具有内阴影
+背景     background-image:url('1.jpg),url('2.jpg')
+渐变     background:linear-gradient(方向，开始颜色，结束颜色)
+过渡动画  transition:property duration timing-function delay
+动画     @keyframes动画帧     
+         animation:name duration timing-function delay interation-count direction play-state
+变换     rotate()旋转   translate()平移   scale( )缩放   skew()扭曲/倾斜
+媒体查询  @media
+```
+
+
+
 
 
 ### 两种盒模型box-sizing⭐ 
@@ -122,7 +139,7 @@ block format context ，块级格式化上下文
 
 ID选择器100
 
-类选择器 10
+类选择器 10=伪类
 
 元素选择器 1
 
@@ -219,17 +236,31 @@ rem适用于字体，这样就可以通过改变根元素的字体大小来改�
 
 （1）利用绝对定位的方式，左右两栏设置为绝对定位，中间设置对应方向大小的margin的值。
 
-（2）利用flex布局的方式，左右两栏的放大和缩小比例都设置为0，基础大小设置为固定的大小，中间一栏设置为auto。
+（2）利用flex布局的方式，左右两栏的放大和缩小比例都设置为0，基础大小设置为固定的大小，中间一栏设置为auto。（flex自带等高布局）
 
 （3）利用浮动的方式，左右两栏设置固定大小，并设置对应方向的浮动。中间一栏设置左右两个方向的margin值，注意这种方式，中间一栏必须放到最后。
 
-（4）圣杯布局，利用浮动和负边距来实现。父级元素设置左右的padding，三列均设置向左浮动，中间一列放在最前面，宽度设置为父级元素的宽度，因此后面两列都被挤到了下一行，通过设置margin负值将其移动到上一行，再利用相对定位，定位到两边。
+（4）**圣杯布局，利用浮动和负边距来实现。**父级元素设置左右的padding，三列均设置向左浮动，中间一列放在最前面，宽度设置为父级元素的宽度，因此后面两列都被挤到了下一行，通过设置margin负值将其移动到上一行，再利用相对定位，定位到两边。
 
-（5）双飞翼布局，双飞翼布局相对于圣杯布局来说，左右位置的保留是通过中间列的margin值来实现的，而不是通过父元素的padding来实现的。本质上来说，也是通过浮动和外边距负值来实现的。
-
-
+（5）双飞翼布局，双飞翼布局相对于圣杯布局来说，左右位置的保留是通过**中间列的margin值**来实现的，而不是通过父元素的padding来实现的。本质上来说，也是通过浮动和外边距负值来实现的。
 
 
+
+### 三列等高布局
+
+**（1）真实等高布局 flex**
+
+技术点：弹性盒子布局flex，默认值就是自带等高布局的特点。
+
+**（2）真实等高布局 table-cell**
+
+技术点：table布局天然就具有等高的特性。
+
+**（3）假等高列布局      使用数值非常大正padding-bottom与负margin-bottom**
+
+实现：设置父容器的overflow属性为hidden。给每列设置比较大的底内边距，然后用数值相似的负外边距消除这个高度。
+
+**（4）绝对定位：top与bottom为0**
 
 
 
@@ -237,99 +268,93 @@ rem适用于字体，这样就可以通过改变根元素的字体大小来改�
 
 ### 圣杯布局和双飞翼布局 ⭐ 
 
-**圣杯布局**
+**圣杯布局（padding）**
+
+* 三个部分都设定为左浮动，**否则左右两边内容上不去，就不可能与中间列同一行**。然后设置center的宽度为100%(**实现中间列内容自适应**)，此时，left和right部分会跳到下一行
+* 通过设置margin-left为负值让left和right部分回到与center部分同一行
+* 通过设置相对定位，让left和right部分移动到两边。
 
 ```html
-<div id="header"></div>
-<div id="container">
-  <div id="center" class="column"></div>
-  <div id="left" class="column"></div>
-  <div id="right" class="column"></div>
-</div>
-<div id="footer"></div>
+<article class="container">
+    <div class="center"></div>
+    <div class="left"></div>
+    <div class="right"></div>
+</article>
 ```
 
 ```css
-body {
-  min-width: 550px;
+.container {
+    padding-left: 220px;//为左右栏腾出空间
+    padding-right: 220px;
 }
-
-#container {
-  padding-left: 200px; 
-  padding-right: 150px;
+.left {
+    float: left;
+    width: 200px;
+    height: 400px;
+    background: red;
+    margin-left: -100%;
+    position: relative;
+    left: -220px;
 }
-
-#container .column {
-  float: left;
+.center {
+    float: left;
+    width: 100%;
+    height: 500px;
+    background: yellow;
 }
-
-#center {
-  width: 100%;
-}
-
-#left {
-  width: 200px; 
-  margin-left: -100%;
-  position: relative;
-  right: 200px;
-}
-
-#right {
-  width: 150px; 
-  margin-right: -150px; 
-}
-
-#footer {
-  clear: both;
+.right {
+    float: left;
+    width: 200px;
+    height: 400px;
+    background: blue;
+    margin-left: -200px;
+    position: relative;
+    right: -220px;
 }
 ```
 
 
 
-**双飞翼布局**
+**双飞翼布局（margin）**
+
+双飞翼布局和圣杯布局很类似，不过是在middle的div里又插入一个div，通过调整内部div的margin值，实现中间栏自适应，内容写到内部div中。
 
 ```html
-<body>
-  <div id="header"></div>
-  <div id="container" class="column">
-    <div id="center"></div>
-  </div>
-  <div id="left" class="column"></div>
-  <div id="right" class="column"></div>
-  <div id="footer"></div>
-<body>
+<article class="container">
+    <div class="center">
+        <div class="inner">双飞翼布局</div>
+    </div>
+    <div class="left"></div>
+    <div class="right"></div>
+</article>
 ```
 
 ```css
-body {
-  min-width: 500px;
+.container {
+    min-width: 600px;//确保中间内容可以显示出来，两倍left宽+right宽
 }
-
-#container {
-  width: 100%;
+.center {
+    float: left;
+    width: 100%;
+    height: 500px;
+    background: yellow;
 }
-
-.column {
-  float: left;
+.center .inner {
+    margin: 0 200px; //新增部分
 }
-        
-#center {
-  margin-left: 200px;
-  margin-right: 150px;
+.left {
+    float: left;
+    width: 200px;
+    height: 400px;
+    background: red;
+    margin-left: -100%;
 }
-        
-#left {
-  width: 200px; 
-  margin-left: -100%;
-}
-        
-#right {
-  width: 150px; 
-  margin-left: -150px;
-}
-        
-#footer {
-  clear: both;
+.right {
+    float: left;
+    width: 200px;
+    height: 400px;
+    background: blue;
+    margin-left: -200px;
 }
 ```
 
@@ -409,8 +434,6 @@ body {
 来表示伪元素。
 
 伪类一般匹配的是元素的一些特殊状态，如hover、link等，而伪元素一般匹配的特殊的位置，比如after、before等。
-
-
 
 
 
