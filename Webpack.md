@@ -1,10 +1,22 @@
-## webpack
+## Webpack
 
 
 
-### webpack介绍一下
+### Webpack介绍一下
 
 webpack是一个**模块打包器**（module bundler），webpack视HTML，JS，CSS，图片等文件都是一种 **资源** ，每个资源文件都是一个模块（module）文件，webpack就是根据每个模块文件之间的依赖关系将所有的模块打包（bundle）起来。
+
+**webpack的构建流程**
+
+1. 初始化：启动构建，读取与合并配置参数，加载 Plugin，实例化 编译器Compiler。
+2. 编译：从 入口Entry 发出，针对每个模块Module 串行调用对应的 Loader 去翻译文件内容，再找到该 Module 依赖的 Module，递归地进行编译处理。
+3. 输出：对编译后的 模块（Module） 组合成 代码块（Chunk），把 Chunk 转换成文件，输出到文件系统。
+
+
+
+https://juejin.im/entry/6844903614469636103
+
+
 
 **作用**
 

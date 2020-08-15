@@ -10,6 +10,22 @@ let const 展开运算符 解构赋值 模块导入导出 class继承 promise sy
 
 ### var、let 及 const 区别（相当于变量提升题目）⭐
 
+以下需要记牢（五点）：
+
+* var声明的变量会挂载在window上，而let和const声明的变量不会
+
+* var声明变量存在变量提升，let和const不存在变量提升
+
+  **块级作用域+不允许重复声明+暂存死区**
+
+* let和const声明形成块作用域，而var不存在此作用域
+
+* 同一作用域下let和const不能声明同名变量，而var可以
+
+* let、const存在暂存死区
+
+
+
 JavaScript 中，函数及变量的声明都将被提升到函数的最顶部。
 
 JavaScript 中，变量可以在使用后声明，也就是变量可以先使用再声明。
@@ -23,7 +39,6 @@ var a = 1
 - `var` 存在提升，我们能在声明之前使用。`let`、`const` 因为暂时性死区的原因，不能在声明前使用
 - `var` 在全局作用域下声明变量会导致变量挂载在 `window` 上，其他两者不会
 - `let` 和 `const` 作用基本一致，但是后者声明的变量不能再次赋值
-
 
 
 ### 为什么0.1+0.2！==0.3
@@ -210,6 +225,10 @@ Object.prototype.toString.call( undefined );	// "[object Undefined]"
 ```
 
 虽然 JavaScript 中没有`Null()`和`Undefined`构造器，但是 JavaScript 也为我们处理这这两种情况。
+**原理**
+
+**所有类在继承Object的时候，改写了toString()方法。** Object原型上的方法是可以输出数据类型的。因此我们想判断数据类型时，也只能使用原始方法。继而有了此方法：`Object.prototype.toString.call(obj)`
+
 
 
 
@@ -218,16 +237,31 @@ Object.prototype.toString.call( undefined );	// "[object Undefined]"
 
 **原型**
 
-我们创建的每个函数都有一个 `prototype(原型)` 属性，这个属性是一个指针，指向一个对象，而这个对象的用途是包含可以由特定类型的所有实例共享的属性和方法。
+我们创建的每个函数都有一个 `prototype(原型)` 属性，这个属性是一个指针，指向一个原型对象。其实原型对象就只是个普通对象，里面存放着所有实例对象需要共享的属性和方法！
+
+```js
+function Person(name,age){
+	this.name = name;	//不需要共享的属性和方法放在构造函数里
+}
+Person.prototype.sex = 'female';    //prototype属性，存放所有实例共享的属性与方法
+
+var person1 = new Person("Summer");
+var person2 = new Person("Lily");
+
+console.log(person1.sex)      // female
+console.log(person2.sex)      // female
+
+Person.prototype.sex = 'male';      //修改prototype属性会影响它的所有实例的sex的值！！
+
+console.log(person1.sex)      // male
+console.log(person2.sex)      // male
+```
+
+
 
 **原型链**
 
-1.每一个构造函数都有一个**prototype**属性，称之为显式原型；
-2.每一个引用类型都有一个__proto__属性，称之为隐式原型；
-3.每一个引用类型的__proto__指向他的构造函数的**prototype**；
-
-每一个构造函数也有自己的__proto__，因为函数本身就是一个引用类型，这个构造函数的__proto__又指向他自己构造函数的**prototype**，这样一级一级往上找就形成了原型链；
-
+当访问一个对象的某个属性时，会先在这个对象本身属性上查找，如果没有找到，则会去它的__proto__隐式原型上查找，即它的构造函数的prototype，如果还没有找到就会再在构造函数的prototype的__proto__中查找，这样一层一层向上查找就会形成一个链式结构，我们称为原型链。
 ![img](https://cdn.nlark.com/yuque/0/2018/png/199663/1544807307596-1e74bf82-9587-458b-bcff-62dfd57b0c87.png){:height="50%" width="50%"}
 
 
@@ -258,24 +292,168 @@ Object.prototype.toString.call( undefined );	// "[object Undefined]"
 
 
 
-### 异步编程方案（有待完善）
+### 异步编程方案
 
 1.JS 异步编程进化史：callback -> promise -> generator(*|yield) -> async + await
 
-2.async/await 函数的实现，就是将 Generator 函数和自动执行器，包装在一个函数里。
+2.**async/await 函数的实现**，`async`函数就是将 Generator 函数的星号（`*`）替换成`async`，将`yield`替换成`await`，仅此而已。
+
+* 内置执行器，不需要像generate函数，需要调用next方法
+
+* 更好的语义，`async`表示函数里有异步操作，`await`表示紧跟在后面的表达式需要等待结果
+* 更广的适用性。`async`函数的`await`命令后面，可以是 Promise 对象和原始类型的值（数值、字符串和布尔值，但这时会自动转成立即 resolved 的 Promise 对象）。
+* 返回值是 Promise。你可以用`then`方法指定下一步的操作。
 
 3.async/await可以说是异步终极解决方案了。
 
 
 
+#### promise对象
+
+1. 作用： 解决异步回调嵌套问题(回调地狱)，将异步的流程用同步的形式表达出来
+2. 思想：
+   - 给promise设置的三种状态： pending, fullfilled, rejected
+   - 通过异步任务的执行结果动态的去修改promise的状态
+   - promise状态的改变可以去then方法中的成功或者失败的回调
+   - 可以通过resolve，reject调用的时候将数据传递给成功或者失败的回调
+
+```js
+let promise = new Promise((resolve, reject) => {
+    //初始化promise的状态为pending---->初始化状态
+    console.log('1111');//同步执行
+    //启动异步任务
+    setTimeout(function () {
+        console.log('3333');
+        //resolve('atguigu.com');//修改promise的状态pending---->fullfilled（成功状态）
+        reject('xxxx');//修改promise的状态pending----->rejected(失败状态)
+    },1000)
+});
+promise.then((data) => {
+    console.log('成功了。。。' + data);
+}, (error) => {
+    console.log('失败了' + error);
+});
+console.log('2222');
+```
+
+#### Generator函数
+
+1. 概念：
+   1、ES6提供的解决异步编程的方案之一
+   2、Generator函数是一个状态机，内部封装了不同状态的数据，
+   3、用来生成遍历器对象
+   4、可暂停函数`(惰性求值)`,`yield可暂停`，`next方法可启动`。每次返回的是yield后的表达式结果
+2. 特点：
+   1、function 与函数名之间有一个星号
+   2、内部用yield表达式来定义不同的状态
+   例如：
+   function* generatorExample(){
+   let result = yield ‘hello’; // 状态值为hello
+   yield ‘generator’; // 状态值为generator
+   }
+   3、generator函数返回的是指针对象(iterator)，而不会执行函数内部逻辑
+   4、调用next方法函数内部逻辑开始执行，遇到yield表达式停止，返回{value: yield后的表达式结果/undefined, done: false/true}
+   5、再次调用next方法会从上一次停止时的yield处开始，直到最后
+   6、yield语句返回结果通常为undefined， 当调用next方法时传参内容会作为启动时yield语句的返回值。 （此方法过于繁琐不推荐使用）
+
+```js
+function* myGenerator(){
+    console.log('开始');
+    let result=yield;
+    console.log(result); //hello
+    console.log('暂停了');
+    yield  '你好';
+    console.log('end');
+    return "end";
+}
+let Mg= myGenerator();
+console.log(Mg.next());
+console.log(Mg.next('hello'));//需调用next重新启动，并且可以传参。
+console.log(Mg.next());
+```
+
+#### async函数
+
+1. 作用: 解决异步回调
+2. 语法：
+
+```js
+async function foo(){
+    await 异步操作;
+    await 异步操作；
+}
+```
+
+1. 通常和promise配合使用，
+2. async代表异步， await等待异步执行
+
+- 异步任务执行成功以后才会执行后续的代码返回的
+- 根据promise实例对象的状态决定的
+  注意点：awit返回值，async的返回值为Promise
+
+```js
+async function foo(){
+    return new Promise((resolve,reject)=>{
+        console.log("我是promise");
+        setTimeout(resolve,1000);	
+    })
+}
+async function test(){
+    console.log("开始执行");
+    await foo();
+    console.log("执行完毕");
+}
+
+test();
+```
+
+
+### async/await 怎么用，如何捕获异常？ 
+
+**async**
+
+ES2017 标准引入了 async 函数，使得异步操作变得更加方便。
+
+async 函数是什么？一句话，它就是 Generator 函数的语法糖。
+
+`async`函数就是将 Generator 函数的星号（`*`）替换成`async`，将`yield`替换成`await`，仅此而已。
+
+**await**
+
+正常情况下，`await`命令后面是一个 **Promise 对象**，返回该对象的结果。如果不是 Promise 对象，就直接返回对应的值。
+
+`await`命令只能用在`async`函数之中，如果用在普通函数，就会报错。
+
+`await`命令后面的`Promise`对象，运行结果可能是`rejected`，所以最好把`await`命令放在`try...catch`代码块中。
+
+
+
+
+
+### Promise原理
+
+阮一峰ES6中的解释：
+
 Promise 是异步编程的一种解决方案，解决了回调地狱的问题
 
-所谓`Promise`，简单说就是一个容器，里面保存着某个未来才会结束的事件（通常是一个异步操作）的结果。
+所谓`Promise`，简单说就是一个容器，里面保存着某个未来才会结束的事件的结果（通常是一个异步操作）。从语法上说，Promise 是一个对象，从它可以获取异步操作的消息。Promise 提供统一的 API，各种异步操作都可以用同样的方法进行处理。
 
 **特点**
 
 * 对象的状态不受外界影响。`Promise`对象代表一个异步操作，有三种状态：`pending`（进行中）、`fulfilled`（已成功）和`rejected`（已失败）。
 * 一旦状态改变，就不会再变
+
+
+
+**then**
+
+Promise 实例具有`then`方法，也就是说，`then`方法是定义在原型对象`Promise.prototype`上的。它的作用是为 Promise 实例添加状态改变时的回调函数。前面说过，`then`方法的第一个参数是`resolved`状态的回调函数，第二个参数（可选）是`rejected`状态的回调函数。
+
+`then`方法返回的是一个新的`Promise`实例（注意，不是原来那个`Promise`实例）。因此可以采用**链式写法**，即`then`方法后面再调用另一个`then`方法。
+
+
+
+阮一峰原文 https://es6.ruanyifeng.com/#docs/promise
 
 
 
@@ -365,29 +543,6 @@ console.log(c.get('a'))
 
 
 
-
-### async/await 怎么用，如何捕获异常？ 
-
-**async**
-
-ES2017 标准引入了 async 函数，使得异步操作变得更加方便。
-
-async 函数是什么？一句话，它就是 Generator 函数的语法糖。
-
-`async`函数就是将 Generator 函数的星号（`*`）替换成`async`，将`yield`替换成`await`，仅此而已。
-
-**await**
-
-正常情况下，`await`命令后面是一个 **Promise 对象**，返回该对象的结果。如果不是 Promise 对象，就直接返回对应的值。
-
-`await`命令只能用在`async`函数之中，如果用在普通函数，就会报错。
-
-`await`命令后面的`Promise`对象，运行结果可能是`rejected`，所以最好把`await`命令放在`try...catch`代码块中。
-
-
-
-
-
 ### 如何用正则实现 trim()？
 
 ```js
@@ -395,7 +550,6 @@ function trim(string){
     return string.replace(/^\s+|\s+$/g, '')
 }
 ```
-
 
 
 
@@ -417,7 +571,15 @@ a = null  // 浏览器就会垃圾回收掉那100m内存 什么时候回收不�
 
 1. 什么是垃圾（没有被引用的是垃圾，如果有几个对象相互引用形成环，那也是垃圾）
 
-2. 如何捡垃圾（遍历和计数，只是不同的算法而已）（从全局作用域开始，把所有遇到的变量都标记一下，如果这些变量引用了其他变量，那就再标记，直到早不到新的对象。标记完后将所有没有标记的对象清除掉）（另一种方法计数标记法）
+2. 如何捡垃圾（**标记清除法和引用计数法**）
+
+   （遍历和计数，只是不同的算法而已）（从全局作用域开始，把所有遇到的变量都标记一下，如果这些变量引用了其他变量，那就再标记，直到早不到新的对象。标记完后将所有没有标记的对象清除掉）（另一种方法计数标记法，引用与否加1减1）
+
+   
+
+   https://www.nowcoder.com/interview/ai/report?roomId=244768
+
+
 
    
 
@@ -506,3 +668,19 @@ window.requestAnimationFrame(step);
 
 
 Node.js也是单线程的Event Loop，但是它的运行机制不同于浏览器环境。
+
+
+
+
+### 类数组与数组的区别
+
+类数组是一个普通对象，真实的数组是Array类型
+
+类数组拥有length属性，不具备数组所具有的方法
+
+**三种转换方法**
+
+* `Array.prototype.slice.call(arrayLike)`
+* [...arrayLike]
+* Array.from(arrayLike)
+

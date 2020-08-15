@@ -2,6 +2,27 @@
 
 ## HTTP/浏览器
 
+### 你是怎么理解HTTP协议的
+
+HTTP（HyperText Transfer Protocol）协议是**基于TCP的应用层协议**，它不关心数据传输的细节，主要是用来规定客户端和服务端的数据传输格式，最初是用来向客户端传输HTML页面的内容。默认端口是80。
+
+> 特点：
+
+**1.HTTP协议是无状态的**
+
+就是说每次HTTP请求都是独立的，任何两个请求之间没有什么必然的联系。但是在实际应用当中并不是完全这样的，引入了Cookie和Session机制来关联请求。
+
+**2.多次HTTP请求**
+
+在客户端请求网页时多数情况下并不是一次请求就能成功的，服务端首先是响应HTML页面，然后浏览器收到响应之后发现HTML页面还引用了其他的资源，例如，CSS，JS文件，图片等等，还会自动发送HTTP请求这些需要的资源。现在的HTTP版本支持管道机制，可以同时请求和响应多个请求，大大提高了效率。
+
+**3.基于TCP协议**
+
+HTTP协议目的是规定客户端和服务端数据传输的格式和数据交互行为，并不负责数据传输的细节。底层是基于TCP实现的。现在使用的版本当中是默认持久连接的，也就是多次HTTP请求使用一个TCP连接。
+
+
+
+
 ### HTTP 状态码知道哪些？分别什么意思？
 
 2XX 成功
@@ -156,11 +177,24 @@ keep-alive 的 HTTP pipelining 相当于单线程的，而 HTTP2 相当于并发
 
 **目的** 主要是用来防止 CSRF 攻击的。简单点说，CSRF 攻击是利用用户的登录态发起恶意请求。
 
-**解决**
+
+
+#### **解决**
+
+> 如果是像解决 ajax 无法提交跨域请求的问题，我们可以使用 jsonp、cors、websocket 协议、服务器代理来解决问题。
 
 1. **jsonp** ，允许 script 加载第三方资源    只支持get。JSONP 本质不是 Ajax 请求，是 script 标签请求。JSONP 请求本质上是利用了 “Ajax请求会受到同源策略限制，而 script 标签请求不会” 这一点来绕过同源策略。
 2. **CORS** 前后端协作设置请求头部，Access-Control-Allow-Origin 等头部信息
-3. **反向代理**（nginx 服务内部配置 Access-Control-Allow-Origin *）
+3. **反向代理**（nginx 服务内部配置 Access-Control-Allow-Origin ）
+4. 使用 **websocket 协议**，这个协议没有同源限制。
+
+> 如果只是想要实现主域名下的不同子域名的跨域操作，我们可以使用设置 document.domain 来解决。
+
+1. document.domain + iframe跨域
+
+2. location.hash
+3. window.name + iframe跨域
+4. postMessage 跨域
 
 **补充：加载图片css js 可无视同源策略**，需server端同意
 
@@ -174,10 +208,16 @@ keep-alive 的 HTTP pipelining 相当于单线程的，而 HTTP2 相当于并发
 
 
 
-### CORS
+### CORS(跨域资源共享)
 
 **CORS 全称是跨域资源共享（Cross-Origin Resource Sharing），是一种 AJAX 跨域请求资源的方式。**
- CORS与JSONP的使用目的相同，但是比JSONP更强大。JSONP只支持GET请求，CORS**支持所有类型的HTTP请求**。JSONP的优势在于支持老式浏览器，以及可以向不支持CORS的网站请求数据。
+ CORS与JSONP的使用目的相同，但是比JSONP更强大。JSONP只支持GET请求，CORS**支持所有类型的HTTP请求**。JSONP的优势在于支持老式浏览器，以及可以向不支持CORS的网站请求数据。  
+CORS 需要浏览器和服务器同时支持。目前，所有浏览器都支持该功能，因此我们只需要在服务器端配置就行。浏览器将 CORS 请求分成两类：简单请求和非简单请求。
+
+**对于简单请求**，浏览器直接发出 CORS 请求。具体来说，就是会在**头信息之中，增加一个 Origin 字段**。Origin 字段用来说明本次请求来自哪个源。服务器根据这个值，决定是否同意这次请求。对于如果 Origin 指定的源，不在许可范围内，服务器会返回一个正常的 HTTP 回应。浏览器发现，这个回应的头信息没有包含 Access-Control-Allow-Origin 字段，就知道出错了，从而抛出一个错误，ajax 不会收到响应信息。如果成功的话会包含一些以 Access-Control- 开头的字段。
+
+**非简单请求**，浏览器会先发出一次预检请求，来判断该域名是否在服务器的白名单中，如果收到肯定回复后才会发起请求。
+
 
 浏览器将CORS请求分成两类：**简单请求**和**非简单请求**
 
@@ -226,6 +266,20 @@ Content-Type：只限于三个值application/x-www-form-urlencoded、multipart/f
 3、但是cookie也是不可以或缺的：cookie的作用是与服务器进行交互，作为HTTP规范的一部分而存在 ，而Web Storage仅仅是为了在本地“存储”数据而生。
 
 
+### Cookie和Session的区别
+
+1、cookie数据存放在客户的浏览器上，session数据放在服务器上。
+
+2、cookie不是很安全，别人可以分析存放在本地的cookie并进行cookie欺骗，考虑到安全应当使用session。
+
+3、session会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能，考虑到减轻服务器性能方面，应当使用cookie。
+
+4、单个cookie保存的数据不能超过4K，很多浏览器都限制一个站点最多保存20个cookie。
+
+5、可以考虑将登陆信息等重要信息存放为session，其他信息如果需要保留，可以放在cookie中。
+
+**存放位置，安全，存储大小**
+
 
 
 
@@ -235,9 +289,9 @@ Content-Type：只限于三个值application/x-www-form-urlencoded、multipart/f
 
 **加载过程**
 
-* `DNS`解析：域名 --> IP地址
+* `DNS`解析：域名 --> IP地址   (递归查询：从根域名服务器到顶级域名服务器再到极限域名服务器依次搜索哦对应目标域名的IP)
 
-* 浏览器根据IP地址向服务器发起`http`请求
+* 浏览器根据IP地址向服务器发起`http`请求   (浏览器与服务器建立tcp连接（三次握手）)
 
 * 服务器处理`http`请求，并返回给浏览器
 
@@ -248,6 +302,68 @@ Content-Type：只限于三个值application/x-www-form-urlencoded、multipart/f
 * 生成 `DOM` 树和 `CSSOM` 树以后，就需要将这两棵树组合为渲染树。
 * 当浏览器生成渲染树以后，就会根据渲染树来进行布局（也可以叫做回流），然后调用 `GPU` 绘制，合成图层，显示在屏幕上。
 * 遇到`<script>`则暂停渲染，优先加载并执行JS代码，完成再继续，直至把`Render Tree`渲染完成
+
+
+
+
+### HTML页面的加载顺序
+
+```html
+<html>
+    <head>
+        <!-- 引用外部JS文件 -->
+        <script src="..........."></script>
+        <!--引用外部css样式 -->
+        <link href="............."/>
+        <style>
+               ..............
+        </style>
+        <script>
+               ..............
+        </script>
+    </head>
+    <body>
+        <script>
+               ..............
+        </script>
+    </body>
+</html>
+```
+
+从上到下运行，先解析head标签中的代码，
+
+（1）head标签中会包含一些引用外部文件的代码，从开始运行就会下载这些被引用的外部文件
+
+​     当**遇到script标签**的时候
+
+​     **浏览器暂停解析（不是暂停下载），将控制权交给JavaScript引擎（解释器）**
+
+​     如果`<script>`标签引用了外部脚本，就下载该脚本，否则就直接执行，执行完毕后将控制权交给浏览器渲染引擎
+
+（2）当head中代码解析完毕，会开始解析body中的代码
+
+​     如果此时head中引用的外部文件没有下载完，将会继续下载
+
+​     浏览器解析body代码中的元素，会按照head中声明一部分样式去解析
+
+​     如果此时遇到body标签中的`<script>`，同样会将控制权交给JavaScript引擎来解析JavaScript
+
+​     解析完毕后将控制权交还给浏览器渲染引擎。
+
+​     **当body中的代码全部执行完毕、并且整个页面的css样式加载完毕后，css会重新渲染整个页面的html元素。**
+
+（3）按照之前的描述，**`<script>`写到body标签内靠后比较好，**
+
+​     因为JavaScript 会操作html元素， 如果在body加载完之前写JavaScript 会造成JavaScript 找不到页面元素
+
+​     但是我们经常将`<script>`写到head中，body中不会有大量的js代码，body中的html代码结构会比较清晰
+
+​     window.onload： 等待页面中的所有内容加载完毕之后才会执行
+
+​     $(document).ready()： 页面中所有DOM结构绘制完毕之后就能够执行
+
+​     可以这样理解：window.onload 和 $(document).ready()/$(function(){}); 相当于  写在body 内  最靠后的`<script> `代码段
+
 
 
 
@@ -344,6 +460,26 @@ Content-Type：只限于三个值application/x-www-form-urlencoded、multipart/f
 
 
 
+
+
+### 使用`Ajax`解决浏览器缓存问题
+
+我们都知道ajax能提高页面载入的速度主要的原因是通过ajax减少了重复数据的载入，也就是说在载入数据的同时将数据缓存到内存中，一旦数据被加载其中，只要我们没有刷新页面，这些数据就会一直被缓存在内存中，当我们提交 的`URL`与历史的`URL`一致时，就不需要提交给服务器，也就是不需要从服务器上面去获取数据，虽然这样降低了服务器的负载提高了用户的体验，但是我们不能获取最新的数据。为了保证我们读取的信息都是最新的，我们就需要禁止他的缓存功能。
+
+**禁止浏览器缓存功能有如下几种方法：**
+
+1. 在`ajax`发送请求前加上 `anyAjaxObj.setRequestHeader("If-Modified-Since","0")`。
+2. 在`ajax`发送请求前加上 `anyAjaxObj.setRequestHeader("Cache-Control","no-cache")`。
+3. 在`URL`后面加上一个随机数：`"fresh=" + Math.random()`;。
+4. 在`URL`后面加上时间戳：`"nowtime=" + new Date().getTime()`;。
+5. 如果是使用`jQuery`，直接这样就可以了`$.ajaxSetup({cache:false})`。这样页面的所有`ajax`都会执行这条语句就是不需要保存缓存记录。
+
+
+
+
+
+
+
 ### TCP和UDP的区别(位于传输层)
 
 - TCP 是面向连接的，UDP 是面向无连接的
@@ -362,7 +498,6 @@ Content-Type：只限于三个值application/x-www-form-urlencoded、multipart/f
 - TCP 报文头里面的序号能使 TCP 的数据按序到达
 - 报文头里面的确认序号能保证不丢包，累计确认及超时重传机制
 - TCP 拥有流量控制及拥塞控制的机制
-
 
 
 总结：**UDP面向无连接  不可靠性  高效**
@@ -405,3 +540,26 @@ TCP/IP模型四层架构从下到上分别是链路层，网络层，传输层�
 
 
 
+### 请介绍下fetch发送2次请求的原因
+
+用fetch的post请求的时候，导致fetch第一次发送了一个Options请求，询问服务器是否支持自定义的请求头，如果服务器支持，则在第二次中发送真正的请求。
+
+
+
+
+
+### 浏览器中的常驻线程
+
+GUI渲染线程  (页面重绘回流时执行，当JS引擎执行时被挂起)
+
+js引擎线程
+
+定时触发器线程
+
+事件触发线程
+
+异步http请求线程
+
+
+
+3D变换`translate3d`，`transform: translateZ(0)` 来开启硬件加速 。
