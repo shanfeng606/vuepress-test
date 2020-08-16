@@ -455,6 +455,36 @@ Promise 实例具有`then`方法，也就是说，`then`方法是定义在原型
 
 阮一峰原文 https://es6.ruanyifeng.com/#docs/promise
 
+### proxy的理解
+
+proxy代理，扩展（增强）对象的一些功能：比如Vue中拦截等
+
+```js
+//语法
+new Proxy(target,handler);
+let obj=new Proxy(被代理的对象，对代理的对象做什么操作)
+handler:{
+	set(){},  //设置的时候执行
+	get(){},  //获取的时候执行
+	deleteProperty(){}
+    has(){}
+    ...
+}
+```
+
+```js
+//实例
+let obj={
+	name:'aaa'
+}
+let newObj=new Proxy(obj,{
+	get(target,property){
+		return target[property]
+	}
+})
+console.log(newObj.name)
+```
+
 
 
 
