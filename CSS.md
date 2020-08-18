@@ -455,3 +455,26 @@ dpi：像素密度，每英寸点数
 3，link是XHTML标签，没有任何兼容问题，而@import是在css2.1之后提出的，所以可能存在兼容问题。
 
 4，link支持JavaScript操作dom方式去改变样式，而@import则不支持。
+
+### CSS设置链接样式顺序
+
+正确顺序：“爱恨原则”（LoVe/HAte），即四种伪类的首字母:LVHA。再重复一遍正确的顺序：a:link、a:visited、a:hover、a:active .
+
+解析：a:link,a:visited,a:hover,a:active 分别是什么意思?  
+
+      1. link:连接平常的状态  
+
+      2. visited:连接被访问过之后  
+
+      3. hover:鼠标放到连接上的时候  
+
+   4. active:连接被按下的时候
+
+
+
+### 如何画一条0.5px的线
+
+* 直接设置0.5px，在不同的浏览器会有不同的表现
+* 缩放：设置1px，然后**scale 0.5**
+* 设置box-shadow的第二个参数为0.5px，表示阴影垂直方向的偏移为0.5px      box-shadow: 0 0.5px 0 #000;
+
