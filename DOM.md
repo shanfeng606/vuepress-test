@@ -74,32 +74,33 @@ bug 在于，如果用户点击的是 li 里面的 span，就没法触发 fn，�
 
 ### JS操作DOM的方法
 
-#### 节点查找（笔试常考）
+> 创建新节点
 
 ```
-document.getElementById ：根据ID查找元素，大小写敏感，如果有多个结果，只返回第一个；
-
-document.getElementsByClassName ：根据类名查找元素，多个类名用空格分隔，返回一个 HTMLCollection 。注意兼容性为IE9+（含）。另外，不仅仅是document，其它元素也支持 getElementsByClassName 方法；
-
-document.getElementsByTagName ：根据标签查找元素， * 表示查询所有标签，返回一个 HTMLCollection 。
-
-document.getElementsByName ：根据元素的name属性查找，返回一个 NodeList 。
-
-document.querySelector ：返回单个Node，IE8+(含），如果匹配到多个结果，只返回第一个。
-
-document.querySelectorAll ：返回一个 NodeList ，IE8+(含）。
-
-document.forms ：获取当前页面所有form，返回一个 HTMLCollection ；
+createDocumentFragment() // 创建一个DOM片段
+createElement() // 创建一个具体的元素
+createTextNode() // 创建一个文本节点
 ```
 
-#### DOM元素的基本操作
+> 添加、移除、替换、插入
 
 ```
-(1).创建:createElement('p');
-(2).插入:parentNode.appendChild('p');
-(3).删除:removeChild)('p');
-(4).更新:replaceChild('p',old);
+appendChild()
+removeChild()
+replaceChild()
+insertBefore() // 在已有的子节点前插入一个新的子节点
 ```
+
+> 查找
+
+```
+getElementsByTagName() // 通过标签名称
+getElementsByName() // 通过元素的Name属性的值(IE容错能力较强，会得到一个数组，其中包括id等于name值的)
+getElementById() // 通过元素Id，唯一性
+```
+
+
+
 
 
 

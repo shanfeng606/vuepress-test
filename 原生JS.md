@@ -230,6 +230,14 @@ Object.prototype.toString.call( undefined );	// "[object Undefined]"
 **所有类在继承Object的时候，改写了toString()方法。** Object原型上的方法是可以输出数据类型的。因此我们想判断数据类型时，也只能使用原始方法。继而有了此方法：`Object.prototype.toString.call(obj)`
 
 
+### javascript对象的几种创建方式
+
+1:表达式 {}
+
+2.new Object()
+
+3.Object.create()也可以用于创建对象
+
 
 
 
@@ -452,8 +460,9 @@ Promise 实例具有`then`方法，也就是说，`then`方法是定义在原型
 `then`方法返回的是一个新的`Promise`实例（注意，不是原来那个`Promise`实例）。因此可以采用**链式写法**，即`then`方法后面再调用另一个`then`方法。
 
 
-
 阮一峰原文 https://es6.ruanyifeng.com/#docs/promise
+
+
 
 ### proxy的理解
 
@@ -670,30 +679,41 @@ window.requestAnimationFrame(step);
 ```
 
 
+### JS为啥是单线程的
+
+JavaScript语言的一大特点是单线程，也就是说，**同一时间只能做一件事情**。
+
+这与它的用途有关，作为浏览器脚本语言，JavaScript 的主要用途是与用户互动，以及操作DOM，这决定了它只能是单线程，否则会带来很复杂的同步问题。
+
+比如，假如JavaScript同时有两个线程，一个线程在某个DOM节点上添加了内容，而另一个线程删除了该节点，这时浏览器应该以哪个线程为准？
 
 
 
 
+### 说一下事件循环(Event Loop)？  
 
-### 说一下事件循环(Event Loop)？  node的机制有待补充
+* **` js` 是单线程的**，所以一次只能执行一个任务，当一个任务需要很长时间时，主线程一直等待任务的执行完成，在执行下个任务是很浪费资源的。
+* JavaScript在处理异步操作时，利用的是**事件循环机制。**
 
-`js` 是单线程的，所以一次只能执行一个任务，当一个任务需要很长时间时，主线程一直等待任务的执行完成，在执行下个任务是很浪费资源的。
-
- 所以，`js`中任务就被分成两种，一种是同步任务，一种是异步任务。执行步骤如下图所示：
-
-![img](https://user-gold-cdn.xitu.io/2019/6/23/16b83ece9d14eab0?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
-
-为了更精细的区分任务，`js`中可以将异步任务划分为宏任务和微任务。
-**宏任务（macro-task）**: 同步 script (整体代码)，setTimeout 回调函数, setInterval 回调函数, I/O, UI rendering；
-**微任务（micro-task）**: process.nextTick, Promise 回调函数，Object.observe，MutationObserver
-
-其执行的顺序是这样的：
+**其执行的顺序是这样的：**（背下来）
 
 1. 首先 JavaScript 引擎会执行一个宏任务，注意这个宏任务一般是指主干代码本身，也就是目前的同步代码
 2. 执行过程中如果遇到微任务，就把它添加到微任务任务队列中
 3. 宏任务执行完成后，立即执行当前微任务队列中的微任务，直到微任务队列被清空
 4. 微任务执行完成后，开始执行下一个宏任务
 5. 如此循环往复，直到宏任务和微任务被清空
+
+
+
+
+
+ 所以，`js`中任务就被分成两种，一种是同步任务，一种是异步任务。执行步骤如下图所示：
+
+![img](https://user-gold-cdn.xitu.io/2019/6/23/16b83ece9d14eab0?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
+
+为了更精细的区分任务，`js`中可以将异步任务划分为宏任务和微任务。
+**宏任务（macro-task）**: 同步 script (整体代码)，setTimeout 回调函数, setInterval 回调函数, ajax请求回调
+**微任务（micro-task）**: process.nextTick, Promise 回调函数，Object.observe，MutationObserver
 
 
 
@@ -713,4 +733,16 @@ Node.js也是单线程的Event Loop，但是它的运行机制不同于浏览器
 * `Array.prototype.slice.call(arrayLike)`
 * [...arrayLike]
 * Array.from(arrayLike)
+
+
+
+### 箭头函数和普通函数的区别
+
+* 箭头函数不会创建自己的this
+* 箭头函数继承而来的this指向永远不变
+* .call()/.apply()/.bind()无法改变箭头函数中this的指向
+* 箭头函数不能作为构造函数的,不能使用new
+* 箭头函数不绑定arguments,取而代之用rest参数…解决
+* 箭头函数没有原型属性prototype
+* 箭头函数不能用作Generator函数，不能使用yeild关键字
 

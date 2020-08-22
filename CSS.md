@@ -1,6 +1,21 @@
 ## CSS
 
 ### CSS3 有哪些新特性？
+常用的有：
+
+**圆角（border-radius） **
+
+**阴影（box-shadow） **
+
+**过渡效果（transition）**
+
+**翻转（transform） **
+
+**动画（animation）**
+
+**媒体查询（@media） **
+
+**弹性盒子（flex）**
 
 ```
 选择器   E:last-child     E:nth-child(n)
@@ -29,6 +44,9 @@
 
 其中设置的width和height是包含内容（content）、和padding、border**但是不包含margin**
 
+标准盒子模型 ＝ margin + border + padding + width （width = content ）
+
+IE盒子模型（怪异） ＝ margin + width（width = border + padding + content ）
 
 
 

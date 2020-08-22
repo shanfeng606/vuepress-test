@@ -21,6 +21,54 @@ HTTP（HyperText Transfer Protocol）协议是**基于TCP的应用层协议**，
 HTTP协议目的是规定客户端和服务端数据传输的格式和数据交互行为，并不负责数据传输的细节。底层是基于TCP实现的。现在使用的版本当中是默认持久连接的，也就是多次HTTP请求使用一个TCP连接。
 
 
+### HTTP请求的内容
+
+**请求行+请求头部+请求数据+空行**
+
+> 请求行   
+
+请求的第一行是：方法、URL、HTTP协议版本    例如：GET /index.html HTTP/1.1
+
+> 请求头(key value形式)  
+
+```
+User-Agent：产生请求的浏览器类型。
+Accept：客户端可识别的内容类型列表。
+Host：主机地址
+```
+
+> 请求数据
+
+请求正文中可以包含用户提交的查询信息，在post方法中，将数据以key value形式发送请求
+
+> 空行
+
+发送回车符和换行符，通知服务器以下不再有请求头
+
+
+
+### HTTP响应的内容
+
+**响应消息行+响应消息头+响应消息正文**
+
+> 响应消息行
+
+包含协议/版本，响应状态码，对响应状态码的描述
+
+> 响应消息头
+
+服务器与客户端通信的暗码，告诉客户端该怎么执行某些操作
+
+> 响应消息正文
+
+和网页右键“查看源码”看到的内容一样
+
+**HTTP中确定报文结束的方法**:
+
+* **关闭TCP连接**  
+
+* **通过`Content-Length`检测**
+
 
 
 ### HTTP 状态码知道哪些？分别什么意思？
@@ -84,16 +132,40 @@ CONNECT：要求用隧道协议连接代理
 
 ### HTTP2.0的特性
 
-* 内容安全：http2.0是基于https的
+* **内容安全**：http2.0是基于https的
 
-* 二进制格式：http1.X的解析是基于文本的，http2.0将所有的传输信息分割为更小的消息和帧，并对他们采用二进制格式编码
-* 多路复用——只需一个连接即可实现并行（**请求管道化，防止队头阻塞，多个请求合并到一个TCP**）
+* **二进制格式**：http1.X的解析是基于文本的，http2.0将所有的传输信息分割为更小的消息和帧，并对他们**采用二进制格式编码**
+* **多路复用**——只需一个连接即可实现并行（**请求管道化，防止队头阻塞，多个请求合并到一个TCP**）
 
 
 
-补充：HTTP2 主要解决的问题也是 TCP连接复用。但它比 keep-alive 更彻底，类似于通信工程里的时分复用，多个请求可以同时发送（不分先后），同时响应，解决了 队头阻塞（HOL blocking）的问题，极大提高效率。
+**补充**：HTTP2 主要解决的问题也是 TCP连接复用。但它比 keep-alive 更彻底，类似于通信工程里的时分复用，多个请求可以同时发送（不分先后），同时响应，解决了 队头阻塞（HOL blocking）的问题，极大提高效率。
 
-keep-alive 的 HTTP pipelining 相当于单线程的，而 HTTP2 相当于并发。
+keep-alive 的 HTTP pipelining 相当于单线程的，而 HTTP2 相当于并发。]
+
+**http如何控制请求的数量**：同一时间针对同一域名下的请求有一定数量限制。超过限制数目的请求会被阻塞
+
+
+
+### **HTTP1.0与1.1区别**
+
+* **长连接**  HTTP 1.0需要使用keep-alive参数来告知服务器端要建立一个长连接，而HTTP1.1默认支持长连接。
+
+* **节约带宽** HTTP 1.1支持只发送header信息(不带任何body信息)
+* **HOST域**  HTTP1.0是没有host域的，HTTP1.1才支持这个参数。
+
+
+
+
+
+### 什么是拥塞控制
+
+**拥塞控制，就是在网络中发生拥塞时，减少向网络中发送数据的速度，防止造成恶性循环；同时在网络空闲时，提高发送数据的速度，最大限度地利用网络资源**。
+
+说的简单点，就和堵车差不多，路就这么宽，来的车多了，自然过的就慢，所以在必要的时候要限号。
+
+https://www.cnblogs.com/tuyang1129/p/12439862.html
+
 
 
 
@@ -183,12 +255,14 @@ keep-alive 的 HTTP pipelining 相当于单线程的，而 HTTP2 相当于并发
 
 > 如果是像解决 ajax 无法提交跨域请求的问题，我们可以使用 jsonp、cors、websocket 协议、服务器代理来解决问题。
 
-1. **jsonp** ，允许 script 加载第三方资源    只支持get。JSONP 本质不是 Ajax 请求，是 script 标签请求。JSONP 请求本质上是利用了 “Ajax请求会受到同源策略限制，而 script 标签请求不会” 这一点来绕过同源策略。
+1. **JSONP** ，允许 script 加载第三方资源    只支持get。JSONP 本质不是 Ajax 请求，是 script 标签请求。JSONP 请求本质上是利用了 “Ajax请求会受到同源策略限制，而 script 标签请求不会” 这一点来绕过同源策略。
 2. **CORS** 前后端协作设置请求头部，Access-Control-Allow-Origin 等头部信息
 3. **反向代理**（nginx 服务内部配置 Access-Control-Allow-Origin ）
 4. 使用 **websocket 协议**，这个协议没有同源限制。
 
 > 如果只是想要实现主域名下的不同子域名的跨域操作，我们可以使用设置 document.domain 来解决。
+>
+> 比如a.test.com和b.test.com   只需要给页面添加document.domain='test.com'表示二级域名都相等就可以实现跨域
 
 1. document.domain + iframe跨域
 
@@ -196,13 +270,25 @@ keep-alive 的 HTTP pipelining 相当于单线程的，而 HTTP2 相当于并发
 3. window.name + iframe跨域
 4. postMessage 跨域
 
-**补充：加载图片css js 可无视同源策略**，需server端同意
 
-`<img/>`----可用于统计打点
+### JSONP的工作原理
 
-`<link/> <script/>`----可使用CDN，CDN一般都是外域
+JSONP
 
-`<script/>`---可实现JSONP
+1. JSONP是通过 script 标签加载数据，获取的数据当做 JS 代码来执行，利用标签没有同源策略的限制（算是一个漏洞），来达到与第三方通信，从而实现跨域。只支持get
+
+2. 提前在页面上声明一个函数，函数名通过接口传参的方式传给后台，后台解析到函数名后在原始数据上「包裹」这个函数名，发送给前端。换句话说，JSONP 需要对应接口的后端的配合才能实现。
+
+```js
+<script>
+	//jsonp回调方法，一定要写在jsonp请求前面
+	function testjson(txt){
+		alert(txt);
+	}
+</script>
+<script src ="/demo/testJsonp.shtml?callback=testjson" type="text/javascript" ></script>
+```
+
 
 
 
@@ -245,9 +331,17 @@ Content-Type：只限于三个值application/x-www-form-urlencoded、multipart/f
 
 
 
+### CORS和JSONP的区别
+
+* JSONP只能实现GET请求，而CORS支持所有类型的HTTP请求。   
+* 使用CORS，开发者可以使用普通的XMLHttpRequest发起请求和获得数据，比起JSONP有更好的错误处理。
+* JSONP主要被老的浏览器支持，它们往往不支持CORS，而绝大多数现代浏览器都已经支持了CORS 
 
 
-### 有几种方式可以实现存储功能，分别有什么优缺点？
+
+
+
+### cookie、localStorage、sessionStorage区别与用法
 
 | 特性         | **cookie**                                 | **localStorage**         | **sessionStorage** | **indexDB**              |
 | ------------ | ------------------------------------------ | ------------------------ | ------------------ | ------------------------ |
@@ -255,15 +349,92 @@ Content-Type：只限于三个值application/x-www-form-urlencoded、multipart/f
 | 数据存储大小 | 4K                                         | 5M                       | 5M                 | 无限                     |
 | 与服务端通信 | 每次都会携带在 header 中，对于请求性能影响 | 不参与                   | 不参与             | 不参与                   |
 
-**说一下cookie**
+localStorage 和 sessionStorage 都具有相同的操作方法，例如 `setItem()`、`getItem()` 和 `removeItem()` 等
+
+```
+//添加修改数据
+sessionStorage.setItem('key', 'value');
+localStorage.setItem('key', 'value');
+```
+
+```
+//获取数据
+sessionStorage.getItem('key');
+localStorage.getItem('key');
+```
+
+```
+//移除数据
+sessionStorage.removeItem('key');
+localStorage.removeItem('key');
+```
+
+```
+//全部清除
+sessionStorage.clear();
+localStorage.clear();
+```
+
+cookie
+
+```
+//储存数据
+window.document.cookie = 'xxx';
+//取出数据
+document.cookie
+```
+
+
+
+### **说一下cookie的内容有哪些**
+
+```js
+"key=name; expires=Thu, 25 Feb 2016 04:18:00 GMT; domain=ppsc.sankuai.com; path=/; secure; HttpOnly"
+```
+
+**expires**
+
+`expires`选项用来设置“cookie 什么时间内有效”。
+
+`expires` 是 http/1.0协议中的选项，在新的http/1.1协议中`expires`已经由 `max-age` 选项代替，两者的作用都是限制cookie 的有效时间。
+
+**domain 和 path**
+
+`domain`是域名，`path`是路径，两者加起来就构成了 URL，`domain`和`path`一起来限制 cookie 能被哪些 URL 访问。
+
+**secure**
+
+`secure`选项用来设置`cookie`只在确保安全的请求中才会发送。当请求是`HTTPS`或者其他安全协议时，包含 `secure` 选项的 `cookie`才能被发送至服务器。
+
+**httpOnly**
+
+这个选项用来设置`cookie`是否能通过 `js` 去访问。如果您在cookie中设置了HttpOnly属性，那么通过js脚本将无法读取到cookie信息，这样能有效的防止XSS攻击
+
+
 
 通俗地说，就是当一个用户通过 HTTP 协议访问一个服务器的时候，这个服务器会将一些 Key/Value 键值对返回给客户端浏览器，并给这些数据加上一些限制条件，在条件符合时这个用户下次访问这个服务器的时候，数据又被完整地带回给服务器。
 
-**Web storage和cookie的区别**
+
+
+### cookie的弊端
+
+* cookie 有大小限制、每条cookie不能超过4kb
+* cookies存在安全性问题、有可能被篡改
+* 有些数据不能存在客户端、例如表单不能重复提交
+* cookie每次发送数据都会发送给服务端、造成不必要的浪费
+
+
+
+
+
+### **Web storage和cookie的区别**
+
+**----存储大小，服务器交互，方法属性**
 
 1、Web Storage的概念和cookie相似，区别是它是为了更大容量存储设计的。Cookie的大小是受限的，并且每次你请求一个新的页面的时候Cookie都会被发送过去，这样无形中浪费了带宽，另外cookie还需要指定作用域，不可以跨域调用。
 2、除此之外，Web Storage拥有setItem,getItem,removeItem,clear等方法，不像cookie需要前端开发者自己封装setCookie，getCookie。
 3、但是cookie也是不可以或缺的：cookie的作用是与服务器进行交互，作为HTTP规范的一部分而存在 ，而Web Storage仅仅是为了在本地“存储”数据而生。
+
 
 
 ### Cookie和Session的区别
@@ -285,7 +456,7 @@ Content-Type：只限于三个值application/x-www-form-urlencoded、multipart/f
 
 ### 从输入url到渲染出页面的整个过程⭐ 
 
-域名解析 –> 发起TCP的3次握手 –> 建立TCP连接后发起http请求 –> 服务器响应http请求，浏览器得到html代码 –> 浏览器解析html代码，并请求html代码中的资源（如js、css、图片等） –> 浏览器对页面进行渲染呈现给用户
+DNS域名解析（先查找缓存） –> 发起TCP的3次握手 –> 建立TCP连接后发起http请求 –> 服务器响应http请求，浏览器得到html代码 –> 浏览器解析html代码，并请求html代码中的资源（如js、css、图片等） –> 浏览器对页面进行渲染呈现给用户
 
 **加载过程**
 
