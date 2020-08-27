@@ -516,6 +516,20 @@ this的值是在**函数执行时**确定的
    this => 外面的 this
 
 
+### this指向的形式4种
+
+a.如果是一般函数,this指向全局对象window
+
+b.在严格模式下"use strict",为undefined
+
+c.对象的方法里调用,this指向调用该方法的对象
+
+d.构造函数里的this,指向创建出来的实例
+
+e.箭头函数，指向外面
+
+
+
 
 ### bind、call、apply的区别
 

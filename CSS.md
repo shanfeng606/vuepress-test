@@ -3,17 +3,17 @@
 ### CSS3 有哪些新特性？
 常用的有：
 
-**圆角（border-radius） **
+**圆角（border-radius）**
 
-**阴影（box-shadow） **
+**阴影（box-shadow）**
 
 **过渡效果（transition）**
 
-**翻转（transform） **
+**翻转（transform）**
 
 **动画（animation）**
 
-**媒体查询（@media） **
+**媒体查询（@media）**
 
 **弹性盒子（flex）**
 

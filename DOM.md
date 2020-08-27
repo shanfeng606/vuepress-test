@@ -100,6 +100,12 @@ getElementById() // 通过元素Id，唯一性
 ```
 
 
+### DOM Tree与Render Tree之间的区别是什么?
+
+Dom Tree 包含了所有的HTMl标签，包括display：none ，JS动态添加的元素等。
+
+Dom Tree 和样式结构体结合后构建呈现Render Tree。Render Tree 能识别样式，每个node都有自己的style，且不包含隐藏的节点（比如display : none的节点）。
+
 
 
 
