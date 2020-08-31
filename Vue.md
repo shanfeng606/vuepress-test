@@ -177,6 +177,10 @@ Vuex 是一个专为 Vue.js 应用程序开发的**状态管理模式**。
 **actions** => 像一个装饰器，包裹mutations，使之可以异步。 `this.$store.dispatch('add')`
 **modules** => 模块化Vuex
 
+Vuex是通过全局注入store对象，来实现组件间的状态共享。**Vuex采用MVC模式中的Model层，规定所有的数据必须通过action—>mutaion—>state这个流程进行来改变状态的。再结合Vue的数据视图双向绑定实现页面的更新。
+
+**视图通过点击事件，触发mutations中方法，可以更改state中的数据，一旦state数据发生更改，getters把数据反映到视图。**
+
 
 
 
@@ -219,6 +223,23 @@ Vue在初始化数据时，会使用**`Object.defineProperty`**重新定义data�
 
 1. 使用 Object.defineProperty 把对象属性全部转为 getter/setter。这些 getter/setter 对用户来说是不可见的，但是在内部它们让 Vue 能够追踪依赖，在 property 被访问和修改时通知变更。
 2. Vue 不能检测到对象属性的添加或删除，解决方法是手动调用 Vue.set 或者 this.$set
+
+**细节：四个步骤**
+
+* 实现一个监听器 `Observer` ，用来劫持并监听所有属性，如果属性发生变化，就通知订阅者；  
+* 实现一个订阅者 `Watcher`，可以收到属性的变化通知并执行相应的方法，从而更新视图；
+* 实现一个订阅器 `Dep`，用来收集订阅者，对监听器 `Observer` 和 订阅者 `Watcher` 进行统一管理；
+* 实现一个解析器 `Compile`，可以解析每个节点的相关指令，对模板数据和订阅器进行初始化。
+
+参考：https://juejin.im/post/6844903903822086151#heading-1
+
+源码：https://www.jianshu.com/p/2ede8e75eed2
+
+
+
+
+
+
 
 
 
@@ -404,6 +425,8 @@ export default{
 
 ### data为什么必须是一个函数？
 
+如果data是一个函数的话，这样每复用一次组件，就会返回一份新的`data`，类似于给每个组件实例创建一个私有的数据空间，让各个组件实例维护各自的数据。而单纯的写成对象形式，就使得所有组件实例共用了一份`data`，就会造成一个变了全都会变的结果。
+
 一个组件被复用多次的话，也就会创建多个实例。本质上，**这些实例用的都是同一个构造函数**。如果data是对象的话，对象属于引用类型，改动一个实例会影响到其他所有的实例。所以为了保证组件不同的实例之间data不冲突，data必须是一个函数。。
 
 
@@ -446,53 +469,6 @@ Vue只有一个html页面，跳转的方式是组件之间的切换
 
 
 
-### Vue监测数组和对象的变化
-
-由于 JavaScript 的限制，Vue **不能检测**数组和对象的变化。尽管如此我们还是有一些办法来回避这些限制并保证它们的响应性。
-
-**对于对象**
-
-对于已经创建的实例，Vue 不允许动态添加根级别的响应式 property。但是，可以使用 **`Vue.set(object, propertyName, value)`** 方法向嵌套对象添加响应式 property。例如，对于：
-
-```
-Vue.set(vm.someObject, 'b', 2)
-```
-
-还可以使用 `vm.$set` 实例方法，这也是全局 `Vue.set` 方法的别名：
-
-```
-this.$set(this.someObject,'b',2)
-```
-
-**对于数组**
-
-Vue 不能检测以下数组的变动：
-
-* 当你利用索引直接设置一个数组项时，例如：`vm.items[indexOfItem] = newValue`
-
-解决办法：
-
-```
-// Vue.set
-Vue.set(vm.items, indexOfItem, newValue)
-```
-
-```
-// Array.prototype.splice
-vm.items.splice(indexOfItem, 1, newValue)
-```
-
-
-
-* 当你修改数组的长度时，例如：`vm.items.length = newLength`
-
-解决办法
-
-```
-vm.items.splice(newLength)
-```
-
-
 ### 虚拟DOM（O(n)）
 
 vdom是虚拟DOM(Virtual DOM)的简称，指的是**用JS模拟的DOM结构，将DOM变化的对比放在JS层来做**。换而言之，vdom就是JS对象。
@@ -520,7 +496,7 @@ vdom是虚拟DOM(Virtual DOM)的简称，指的是**用JS模拟的DOM结构，�
 
 
 
-### Diff算法
+### Diff算法（O(n)）
 
 **diff算法**：找出有必要更新的节点更新，没有更新的节点就不要动
 
@@ -531,7 +507,7 @@ vdom是虚拟DOM(Virtual DOM)的简称，指的是**用JS模拟的DOM结构，�
 - tag和key，两者都相同，则认为是相同节点，不在深度比较
 
 
-
+原先的复杂度是n^3，需要进行三步操作，插入，删除，替换
 之前在Virtual DOM中讲到当状态改变了，vue便会重新构造一棵树的对象树，然后用这个新构建出来的树和旧树进行对比。这个过程就是patch。比对得出「差异」，最终将这些「差异」更新到视图上。
 
 
@@ -556,6 +532,10 @@ key的作用是key来给每个节点做一个唯一标识，辅助判断新旧vd
 
 **hash（默认）**—— 即地址栏 URL 中的 # 符号
 
+**vue-router 默认模式是 hash 模式 —— 使用 URL 的 hash 来模拟一个完整的 URL，当 URL 改变时，页面不会去重新加载**。
+
+hash（#）是URL 的锚点，代表的是网页中的一个位置，单单改变#后的部分（/#/..），浏览器只会加载相应位置的内容，不会重新加载网页，也就是说 #是用来指导浏览器动作的，对服务器端完全无用，HTTP请求中不包括#；同时每一次改变#后的部分，都会在浏览器的访问历史中增加一个记录，使用”后退”按钮，就可以回到上一个位置；**所以说Hash模式通过锚点值的改变，根据不同的值，渲染指定DOM位置的不同数据**。
+
 * 原理是onhashchage事件，可以在window对象上监听这个事件
 
 ```javascript
@@ -571,4 +551,28 @@ window.onhashchange = function(event){
 - 需要后台配置支持。如果刷新时，服务器没有响应响应的资源，会刷出404
 
 
+
+### Vue2.0和Vue3.0的区别
+
+**1.项目目录结构**
+
+**2.配置项**
+
+**3.渲染**
+
+Vue2.x使用的Virtual Dom实现的渲染
+
+Vue3.0不论是原生的html标签还是vue组件，他们都会通过h函数来判断，如果是原生html标签，在运行时直接通过Virtual Dom来直接渲染，同样如果是组件会直接生成组件代码
+
+**4.数据监听**
+
+Vue2.x大家都知道使用的是es5的object.defineproperties中getter和setter实现的，而vue3.0的版本，是基于Proxy进行监听的，其实基于proxy监听就是所谓的lazy by default，什么意思呢，就是只要你用到了才会监听，可以理解为‘按需监听’，官方给出的诠释是：速度加倍，同时内存占用还减半。
+
+**5.按需引入**
+
+Vue2.x中new出的实例对象，所有的东西都在这个vue对象上，这样其实无论你用到还是没用到，都会跑一遍。而vue3.0中可以用ES module imports按需引入，如：keep-alive内置组件、v-model指令，等等。
+
+
+
+https://segmentfault.com/a/1190000022056029
 

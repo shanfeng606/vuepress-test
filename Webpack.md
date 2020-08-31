@@ -101,6 +101,30 @@ import {firstName, lastName, year} from './profile.js';
 ```
 
 
+### JS模块化规范
+
+AMD和CMD都是浏览器端的js模块化规范，分别由require.js和sea.js实现。 CommonJS是服务器端的js模块化规范，由NodeJS实现。
+
+
+
+
+
+### CommonJS模块与ES6模块的区别
+
+- **`CommonJS` 模块输出的是一个值的拷贝，ES6 模块输出的是值的引用。**
+
+`CommonJS`输出的值的拷贝，第一次加载模块时会缓存该模块，并且加载该模块时，即使改变输入的值，也会对原模块内部的变量造成影响。而ES6 模块输出的是值的引用，引入该模块修改输入的变量时，会对原模块内部的变量有影响！
+
+- **`CommonJS` 模块是运行时加载，`ES6` 模块是编译时输出接口。**
+
+`CommonJS` 模块是运行时加载，只有执行到`require`时才会加载该模块，而`import`引入`ES6` 模块是在编译阶段执行，在代码执行之前就已经拿到输入变量。
+
+当使用require命令加载同一个模块时，不会再执行该模块，而是取到缓存之中的值。
+
+https://www.cnblogs.com/unclekeith/archive/2017/10/17/7679503.html
+
+
+
 
 
 
@@ -135,7 +159,6 @@ import {firstName, lastName, year} from './profile.js';
 loader译为加载器，主要用于加载资源文件，webpack默认只支持加载js文件，使用loader可以实现css,less等文件的资源转化 
 
 plugin主要用于拓展webpack的功能，例如打包压缩，定义环境变量等功能
-
 
 
 
