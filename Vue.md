@@ -10,6 +10,25 @@
 
 MVVM 的核心是 ViewModel 层，它就像是一个中转站，负责转换 Model 中的数据对象来让数据变得更容易管理和使用，该层向上与视图层进行双向数据绑定，向下与 Model 层通过接口请求进行数据交互，起承上启下作用。
 
+**vue的优势**
+
+vue.js是一个轻巧、高性能、可组件化的MVVM库，同时API容易上手。
+vue.js也是一个构建数据驱动页面的库。
+
+轻量级框架
+
+简单易学
+
+双向数据绑定
+
+组件化
+
+视图,数据,结构分离
+
+虚拟DOM
+
+运行速度更快
+
 
 
 
@@ -33,6 +52,17 @@ watch:
 * **无缓存性**，页面重新渲染时值不变化也会执行
 
 * 栗子：搜索数据
+
+
+Watch的属性：
+
+1、immediate和handler
+
+这样使用watch时有一个特点，就是当值第一次绑定时，不会执行监听函数，只有值发生改变时才会执行。如果我们需要在最初绑定值的时候也执行函数，则就需要用到immediate属性。
+
+2、deep
+
+当需要监听一个对象的改变时，普通的watch方法无法监听到对象内部属性的改变，此时就需要deep属性对对象进行深度监听
 
 
 
@@ -139,7 +169,7 @@ mounted() {
 
 **方法三：`provide`/`inject`**
 
-```
+```js
 // A.vue
 export default {
   provide: {
@@ -148,7 +178,7 @@ export default {
 }
 ```
 
-```
+```js
 // B.vue
 export default {
   inject: ['name'],
@@ -237,9 +267,68 @@ Vue在初始化数据时，会使用**`Object.defineProperty`**重新定义data�
 
 
 
+### Vue如何触发对数组的监听
+
+Object.defineProperty对数组进行响应式化是有缺陷的
+
+Vue 中对这个数组问题的解决方案非常的简单粗暴，就是对能够改变数组的方法做了一些手脚。
+
+Vue在array.js中**重写**了methodsToPatch中push、pop、shift、unshift、splice、sort、reverse七个方法，并将重写后的原型暴露出去。
+
+因此在Observer构造函数中，可以看到在监听数据时会判断数据类型是否为数组。当为数组时，如果浏览器支持__proto__，则直接将当前数据的原型__proto__指向重写后的数组方法对象arrayMethods，如果浏览器不支持__proto__，则直接将arrayMethods上重写的方法直接定义到当前数据对象上；当数据类型为非数组时，继续递归执行数据的监听。
 
 
 
+### Vue3数据监听
+
+**Proxy**
+
+可以理解为在对象之前设置一个”拦截“，当监听的对象被访问的时候，都必须经过这层拦截。可以在这拦截中对原对象处理，返回需要的数据格式
+也就是无论访问对象的什么属性，之前定义的或是新增的属性，都会走到拦截中进行处理。这就解决了之前所无法监听的问题
+
+```
+new Proxy(data, {
+  get(key) { },
+  set(key, value) { },
+})
+```
+
+可以看到，proxy 不需要关心具体的 key，它去拦截的是 修改 data 上的任意 key 和 读取 data 上的任意 key
+所以，不管是已有的 key 还是新增的 key，都会监听到
+
+
+### 实现一个简单的双向绑定
+
+```js
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>双向绑定最最最初级demo</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <div id="app">
+            <input type="text" id="txt">
+            <p id="show-txt"></p>
+        </div>
+    </body>
+    <script>
+        var obj={}
+        Object.defineProperty(obj,'txt',{
+            get:function(){           //get是读取时触发的函数
+                return obj
+            },
+            set:function(newValue){   //set是设置时触发的函数
+                document.getElementById('txt').value = newValue
+                document.getElementById('show-txt').innerHTML = newValue
+            }
+        })
+        document.addEventListener('keyup',function(e){
+            obj.txt = e.target.value
+        })
+    </script>
+</html>
+```
 
 
 
@@ -361,7 +450,6 @@ ref="domName"   用法;this.$refs.domName
 
 
 
-
 ### v-model的原理
 
 v-model用于表单数据的双向绑定，其实它就是一个语法糖，这个背后就做了两个操作：
@@ -375,17 +463,6 @@ v-model用于表单数据的双向绑定，其实它就是一个语法糖，这�
 
 
 
-
-
-
-
-
-
-### Vue Router
-
-单页面跳转
-
-https://router.vuejs.org/zh/guide/#html
 
 
 
@@ -431,6 +508,8 @@ export default{
 
 
 
+
+
 ### vue常用的修饰符
 
 .stop：等同于JavaScript中的event.stopPropagation()，防止事件冒泡；
@@ -439,6 +518,20 @@ export default{
 .self：只会触发自己范围内的事件，不包含子元素；
 .once：只会触发一次。
 
+
+### vue常用的命令
+
+**v-if指令**：根据表达式的真假来删除和插入元素
+
+**v-show**：也是条件渲染指令，控制元素显隐，和v-if指令不同的是，使用v-show指令的元素始终会被渲染到HTML，它只是简单地为元素设置CSS的style属性
+
+**v-for指令**：基于一个数组渲染一个列表，它和JavaScript的遍历语法相似
+
+**v-else指令**：可以用v-else指令为v-if或v-show添加一个“else块”。v-else元素必须立即跟在v-if或v-show元素的后面——否则它不能被识别。
+
+**v-bind指令**：其名称后面带一个参数，中间放一个冒号隔开，这个参数通常是HTML元素的特性（attribute），例如：v-bind:class=”’’
+
+**v-on指令**：用于给监听DOM事件，它的用语法和v-bind是类似的，`<a v-on:click="doSomething">`
 
 
 
@@ -550,6 +643,16 @@ window.onhashchange = function(event){
 - 利用了HTML5 History Interface 中新增的pushState()和replaceState()方法。
 - 需要后台配置支持。如果刷新时，服务器没有响应响应的资源，会刷出404
 
+https://juejin.im/post/6844903695365177352#heading-2
+
+vue-router官网
+
+https://router.vuejs.org/zh/guide/#html
+
+
+
+
+
 
 
 ### Vue2.0和Vue3.0的区别
@@ -575,4 +678,42 @@ Vue2.x中new出的实例对象，所有的东西都在这个vue对象上，这�
 
 
 https://segmentfault.com/a/1190000022056029
+
+
+
+### Vue与React的区别
+
+**数据是否可变**
+
+react整体是函数式的思想，在react中，是单向数据流，推崇结合immutable来实现数据不可变。
+
+而Vue的思想是响应式的，也就是基于是数据可变的，通过对每一个属性建立Watcher来监听，当属性变化的时候，响应式的更新对应的虚拟dom。
+
+**HTML和JSX**
+
+react的思路是all in js，通过js来生成html，所以设计了jsx，还有通过js来操作css，社区的styled-component、jss等。Vue是把html，css，js组合到一起，用各自的处理方式，Vue有单文件组件，可以把html、css、js写到一个文件中，html提供了模板引擎来处理。
+
+**应用场景**
+
+React适合构建大型应用项目，同时适用于Web端和原生APP
+
+Vue适用于尽可能小和块的项目
+
+
+
+### vue 的点击事件怎么获取当前点击的元素
+
+```js
+首先 vue的点击事件 是用  @click = “clickfun()” 属性 在html中绑定的,
+在点击的函数中 添加$event 参数就可以
+比如
+<button  @click = “clickfun($event)”>点击</button>
+
+methods: {
+    clickfun(e) {
+      // e.target 是你当前点击的元素
+      // e.currentTarget 是你绑定事件的元素
+    }
+  }
+```
 

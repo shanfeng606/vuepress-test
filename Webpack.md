@@ -54,7 +54,7 @@ https://juejin.im/entry/6844903614469636103
 
 #### commonjs
 
-在的前端开发中我们经常会用到node，node中的模块化就需要使用commonjs，所以掌握commonjs是必须的。
+**CommonJS是服务器端的js模块化规范，由NodeJS实现。**
 
 > 通过module.exports导出模块
 
@@ -99,11 +99,11 @@ export {firstName, lastName, year};
 ```js
 import {firstName, lastName, year} from './profile.js';
 ```
+补充
+
+`export default`命令用于指定模块的默认输出。显然，一个模块只能有一个默认输出，因此`export default`命令只能使用一次。所以，import命令后面才不用加大括号，因为只可能唯一对应`export default`命令。
 
 
-### JS模块化规范
-
-AMD和CMD都是浏览器端的js模块化规范，分别由require.js和sea.js实现。 CommonJS是服务器端的js模块化规范，由NodeJS实现。
 
 
 
@@ -113,7 +113,9 @@ AMD和CMD都是浏览器端的js模块化规范，分别由require.js和sea.js�
 
 - **`CommonJS` 模块输出的是一个值的拷贝，ES6 模块输出的是值的引用。**
 
-`CommonJS`输出的值的拷贝，第一次加载模块时会缓存该模块，并且加载该模块时，即使改变输入的值，也会对原模块内部的变量造成影响。而ES6 模块输出的是值的引用，引入该模块修改输入的变量时，会对原模块内部的变量有影响！
+`CommonJS`输出的值的拷贝，第一次加载模块时会缓存该模块，并且加载该模块时，即使改变输入的值，也不会对原模块内部的变量造成影响。而ES6 模块输出的是值的引用，引入该模块修改输入的变量时，会对原模块内部的变量有影响！
+
+* **ES6模块化导入是异步导入，CommonJS导入是同步导入。**
 
 - **`CommonJS` 模块是运行时加载，`ES6` 模块是编译时输出接口。**
 
@@ -122,7 +124,6 @@ AMD和CMD都是浏览器端的js模块化规范，分别由require.js和sea.js�
 当使用require命令加载同一个模块时，不会再执行该模块，而是取到缓存之中的值。
 
 https://www.cnblogs.com/unclekeith/archive/2017/10/17/7679503.html
-
 
 
 ### AMD与CMD

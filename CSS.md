@@ -31,12 +31,27 @@
 ```
 
 
+### 有哪些选择器
+
+* 标签选择器
+* 类选择器
+* id选择器
+* 子选择器 >
+* 包含选择器：以空格隔开包含关系的元素，(模块名模块名，修饰空格前模块内所有该模块)
+* 兄弟选择器 ~
+* 相邻选择器 +
+* 全局选择器 *
+* 群选择器：以，分隔(逗号分隔开需要修饰的模块名)
+* 属性选择器：[] ([type=text]修饰属性为type=text的模块)
+* 伪类选择器
+
+
 
 
 
 ### 两种盒模型box-sizing⭐ 
 
-**content-box **  
+**content-box**  
 
 默认值，其中设置的width 和height是只包含了内容的宽高（content）,但不包含内边距（padding）、边框（border）、外边距（margin）
 
@@ -120,6 +135,18 @@ justify-content: flex-start | flex-end | center | space-around | space-between
 align-items: stretch | flex-start | flex-end | center
 flex-wrap: nowrap | wrap | wrap-reverse;
 ```
+flex兼容性问题
+
+加前缀
+
+**-webkit-**         Safari/Chrome
+
+**-ms-**                IE
+
+**-moz-**              Firefox 
+
+https://cloud.tencent.com/developer/article/1532737
+
 
 
 
@@ -422,7 +449,29 @@ dpi：像素密度，每英寸点数
   }
   ```
 
-  
+### CSS与JS动画优缺点
+
+CSS实现动画：animation transition transform
+
+JS实现动画：setInterval setTimeout requestAnimationFrame
+
+JS动画：控制方便，能做复杂的动画，没有兼容性问题
+
+css动画：代码简单，集中所有的DOM，一次重绘重排，可用硬件加速功能
+
+https://www.cnblogs.com/sarah-wen/p/10801002.html
+
+
+
+**CSS动画流畅的原因**
+
+渲染线程分为main thread(主线程)和compositor thread(合成器线程)。
+
+**如果CSS动画只是改变`transform`和`opacity，`**`这时整个CSS动画得以在compositor thread完成（而JS动画则会在main thread执行，然后触发compositor进行下一步操作），所以，当在JS执行一些昂贵的任务时，main thread繁忙，CSS动画由于使用了compositor thread可以保持流畅。`
+
+
+
+
 
 ### CSSSprites原理和优势
 
@@ -439,6 +488,8 @@ dpi：像素密度，每英寸点数
 
 图片合并麻烦
 维护麻烦，修改一个图片可能需要重新布局整个图片，样式
+
+
 
 
 
@@ -495,4 +546,113 @@ dpi：像素密度，每英寸点数
 * 直接设置0.5px，在不同的浏览器会有不同的表现
 * 缩放：设置1px，然后**scale 0.5**
 * 设置box-shadow的第二个参数为0.5px，表示阴影垂直方向的偏移为0.5px      box-shadow: 0 0.5px 0 #000;
+
+
+### 如何判断浏览器是否支持css3属性
+
+**CSS.supports()方法**
+
+```js
+//判断是否支持flex布局
+var supportsFlex = CSS.supports("display", "flex");
+
+//判断是否支持rem单位
+var supportsRem = CSS.supports("width","1rem");
+
+//判断兼容性属性
+var supportsAPS = CSS.supports("animation-play-state")||CSS.supports("-webkit-animation-play-state")||CSS.supports("-ms-animation-play-state")||CSS.supports("-Moz-animation-play-state")||CSS.supports("-o-animation-play-state");
+```
+
+**查找document.documentElement.style是否存在要查询的属性**
+
+```js
+function isString(value){
+    return typeof value == "string";
+}
+var docStyle = document.documentElement.style;
+var supportsAPS = isString(docStyle.animationPlayState)||isString(docStyle.webkitanimationPlayState)||isString(docStyle.MozanimationPlayState)||isString(docStyle.msanimationPlayState)||isString(docStyle.oanimationPlayState);
+```
+
+
+
+
+
+### Flex 与 Grid的区别
+
+**Grid**
+
+Grid在全局布局方面大胜，是元帅
+**网格=>二维布局**，以布局为基础，布局自适应，多维联动厉害
+独立源：可以设置区域及项目选择区域而与书写文档脱钩=>好维护
+网格分层：z-index(可以看成3维)，脱离文档流
+
+**Flex**
+
+Flex在局部布局方面大胜，是大将
+**弹性=>一维(多行1.5维)**，以内容为基础，内容自适应，单行联动厉害
+order:半个独立源
+排版方向或内容排版方面绝对的高手
+弹性特点：没有方向，空间自由分配，自动对齐
+
+
+
+
+
+### scrollHeight, clientHeight, offsetHeight, scrollTop
+
+**scrollHeight**
+
+所有的内容（指图一图中有文字的红色框框内）和内边距，这个内容包括肉眼看不见、溢出、被窗口遮挡的部分；
+
+**clientHeight**
+
+视野内可见的内容和内边距，不包括x轴的滚动条高度、边框、外边距
+
+**offsetHeight**
+
+在clientHeight的基础上， 加上边框和滚动条的高度；
+
+**scrollTop**
+
+滚动条滚动了多少距离（包括之前已滚动过的隐藏内容）就是scrollTop
+
+
+
+元素距离文档顶端和左边的偏移值 
+
+document.getBoundingClientRect 
+
+```html
+obj.offsetTop //IE firefox
+obj.offsetLeft //IE firefox
+```
+
+
+
+
+
+
+
+### 重绘（Repaint）和回流（Reflow）⭐ 
+
+* 重绘是当节点需要**更改外观而不会影响布局**的，比如改变 `color` 就叫称为重绘
+
+* 回流是**布局或者几何属性需要改变**就称为回流。需要重新计算渲染树，成本高
+
+回流**必定**会发生重绘，重绘**不一定**会引发回流。回流所需的成本比重绘高的多，改变父节点里的子节点很可能会导致父节点的一系列回流
+
+> **减少重绘和回流(能记多少是多少)**
+
+- **使用 `transform` 替代 `top`**
+- **使用 `visibility` 替换 `display: none`** ，因为前者只会引起重绘，后者会引发回流（改变了布局
+- **避免使用`table`布局**，可能很小的一个小改动会造成整个 `table` 的重新布局。
+- **尽可能在`DOM`树的最末端改变`class`**，回流是不可避免的，但可以减少其影响。尽可能在DOM树的最末端改变class，可以限制了回流的范围，使其影响尽可能少的节点。
+- **避免设置多层内联样式**，CSS 选择符**从右往左**匹配查找，避免节点层级过多。
+- **将动画效果应用到`position`属性为`absolute`或`fixed`的元素上**，避免影响其他元素的布局
+- **避免使用`CSS`表达式**，可能会引发回流。
+- **CSS3 硬件加速（GPU加速）**
+
+- **避免频繁操作样式**，最好一次性重写`style`属性，或者将样式列表定义为`class`并一次性更改`class`属性。
+- **避免频繁操作`DOM`**，创建一个`documentFragment`，在它上面应用所有`DOM操作`，最后再把它添加到文档中。
+- **避免频繁读取会引发回流/重绘的属性**，如果确实需要多次使用，就用一个变量缓存起来。
 

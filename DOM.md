@@ -107,10 +107,3 @@ Dom Tree 包含了所有的HTMl标签，包括display：none ，JS动态添加�
 Dom Tree 和样式结构体结合后构建呈现Render Tree。Render Tree 能识别样式，每个node都有自己的style，且不包含隐藏的节点（比如display : none的节点）。
 
 
-
-
-
-
-
-
-

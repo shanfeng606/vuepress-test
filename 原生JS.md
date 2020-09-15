@@ -8,6 +8,30 @@ let const 展开运算符 解构赋值 模块导入导出 class继承 promise sy
 
 
 
+### ES6中数组的新方法
+
+1、扩展运算符 ...
+
+2、Array.from()
+
+3、Array,of()    `Array.of`方法用于将一组值，转换为数组。   Array.of(3, 11, 8) // [3,11,8]
+
+4、fill() 填充数组
+
+5、find() 和 findindex()
+
+```
+[1, 4, -5, 10].find((n) => n < 0)
+// -5
+```
+
+6、includes()   返回一个布尔值，表示某个数组是否包含给定的值
+
+7、entries()  /keys()  /values()
+
+
+
+
 ### var、let 及 const 区别（相当于变量提升题目）⭐
 
 以下需要记牢（五点）：
@@ -25,6 +49,8 @@ let const 展开运算符 解构赋值 模块导入导出 class继承 promise sy
 * let、const存在暂存死区
 
 
+const 定义的基本数据类型的变量不能修改，但引用类型可以修改指向的内容，但不能修改指针指向
+
 
 JavaScript 中，函数及变量的声明都将被提升到函数的最顶部。
 
@@ -41,9 +67,19 @@ var a = 1
 - `let` 和 `const` 作用基本一致，但是后者声明的变量不能再次赋值
 
 
+为什么要变量提升
+
+1、提高性能，让函数可以在执行时预先为变量分配栈空间
+
+在JS代码执行之前，会进行语法检查和预编译，并且这一操作只进行一次。这么做就是为了提高性能，如果没有这一步，那么每次执行代码前都必须重新解析一遍该变量（函数），而这是没有必要的，因为变量（函数）的代码并不会改变，解析一遍就够了。
+
+2、声明提升还可以提高JS代码的容错性，使一些不规范的代码也可以正常执行
+
+
 ### 为什么0.1+0.2！==0.3
 
 因为 0.1 和 0.2 被转成二进制后会无限循环，由于JS中位数的限制多余的位数会被截掉，就出现了精度损失。
+解决方法：**toFixed()，toFixed() 方法可把 Number 四舍五入为指定小数位数的数字。**
 
 
 
@@ -97,6 +133,9 @@ var a = 1
 
 https://www.ruanyifeng.com/blog/2014/03/undefined-vs-null.html
 
+undefined !== null  //true
+undefined == null  //true
+
 
 
 
@@ -136,6 +175,27 @@ https://www.ruanyifeng.com/blog/2014/03/undefined-vs-null.html
 * 不能遍历，方法同get,set,has,delete
 
 
+### JavaScript 中 Map 和 Object 的区别
+
+1：Object对象有原型， 也就是说他有默认的key值在对象上面， 除非我们使用Object.create(null)创建一个没有原型的对象
+2：在Object对象中， 只能把String和Symbol作为key值， 但是在Map中，key值可以是任何基本类型的值或者对象
+3：通过Map中的size属性， 可以很方便地获取到Map长度， 要获取Object的长度， 你只能用别的方法了
+
+https://blog.csdn.net/liangchuannan/article/details/70053038　　
+
+
+
+### JavaScript数组的迭代方法map,filter。。。
+
+map() 方法创建一个新数组，其结果是该数组中的每个元素都调用一个提供的函数后返回的结果。
+
+forEach() 方法对数组的每个元素执行一次提供的函数。
+
+some() 和 every() 方法不会改变原始数组。
+
+
+
+
 
 ###   JS的数据类型及存放位置
 
@@ -164,6 +224,19 @@ https://www.ruanyifeng.com/blog/2014/03/undefined-vs-null.html
 栈：原始数据类型（Undefined、Null、Boolean、Number、String）
 
 堆：引用数据类型（对象、数组和函数）
+string：基本包装类型
+
+
+### 基本类型跟引用类型的区别
+
+ **声明变量时不同的内存分配：**一个在栈，一个堆
+
+**不同的内存分配机制也带来了不同的访问机制**：原始类型可以直接访问，引用类型按引用访问
+
+ **复制变量时的不同**：基本类型复制出独立数据，引用类型复制的一个指针
+
+
+
 
 
 ### 判断数据类型
@@ -230,13 +303,70 @@ Object.prototype.toString.call( undefined );	// "[object Undefined]"
 **所有类在继承Object的时候，改写了toString()方法。** Object原型上的方法是可以输出数据类型的。因此我们想判断数据类型时，也只能使用原始方法。继而有了此方法：`Object.prototype.toString.call(obj)`
 
 
+
+### 如何理解js中基本数据类型的值不可变
+
+**在 JavaScript 中，字符串的值是不可变的，这意味着一旦字符串被创建就不能被改变**
+
+栈创建的时候，大小是确定的
+
+而堆的大小是不确定的，需要的话可以不断增加
+
+
+
+
 ### javascript对象的几种创建方式
 
-1:表达式 {}
+1、字面量方式  {}
 
-2.new Object()
+2、调用系统的构造函数 new Object()
 
-3.Object.create()也可以用于创建对象
+3、Object.create()也可以用于创建对象
+
+4、自定义构造函数的方式
+
+```js
+function Student(name,age,ID,sex){
+    this.name=name;
+    this.age=age;
+    this.ID=ID;
+    this.sex=sex;
+    this.sayHi=function(){
+    	console.log("您好！");
+    };
+}
+        //创建对象--->实例化一个对象，同时对属性进行初始化。
+        //    1.开辟空间存储对象
+        //    2.把this设置为当前的对象
+        //    3.设置属性和方法的值
+        //    4.把this对象返回
+        var stu3=new Student("小天",18,20181113,"男");
+```
+
+5、工厂模式创建对象
+
+```js
+function student(name,age,ID,sex){
+    var obj = new Object();
+    obj.name=name;
+    obj.age=age;
+    obj.ID=ID;
+    obj.sex=sex;
+    obj.sayHi=function(){
+    	console.log("您好！");
+    };
+    return obj;
+}
+var stu4=student("小菊",21,20181114,"女");
+```
+
+工厂模式和自定义构造函数创建对象的区别：
+
+![img](https://img-blog.csdn.net/20180622113822343?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NsZWVwd2Fsa2VyXzE5OTI=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
+
+
+
 
 
 
@@ -759,4 +889,81 @@ Node.js也是单线程的Event Loop，但是它的运行机制不同于浏览器
 * 箭头函数不绑定arguments,取而代之用rest参数…解决
 * 箭头函数没有原型属性prototype
 * 箭头函数不能用作Generator函数，不能使用yeild关键字
+
+### 如何判断两个数组相同
+
+**方法一：**
+
+先排序，再利用  `toString()`  方法
+
+**方法二：**
+
+借助JSON的 `stringify()` 方法
+
+
+
+###  如何判断两个对象相同
+
+```js
+var deepEqual = function (x, y) {
+  // 指向同一内存时
+  if (x === y) {
+    return true;
+  }
+  else if ((typeof x == "object" && x != null) && (typeof y == "object" && y != null)) {
+    if (Object.keys(x).length != Object.keys(y).length)
+      return false;
+ 
+    for (var prop in x) {
+      if (y.hasOwnProperty(prop))
+      {  
+        if (! deepEqual(x[prop], y[prop]))
+          return false;
+      }
+      else
+        return false;
+    }
+ 
+    return true;
+  }
+  else 
+    return false;
+}
+```
+
+
+
+
+
+### js中遍历对象和遍历数组的方法
+
+数组：
+
+* 普通for
+* forEach
+* map
+* for in
+* for of        ES6新增功能，支持数组，类数组，字符串
+
+对象
+
+* for in （主要用于遍历对象的可枚举属性，包括自有属性、继承自原型的属性）
+* Object.keys      (此方法返回一个数组，元素均为对象自有可枚举的属性)
+* Object.getOwnPropertyNames     (此方法用于返回对象的自有属性，包括可枚举和不可枚举的属性)
+
+
+
+
+
+
+
+### 实现图片懒加载的原理
+
+1.首先,不要将图片地址放到src属性中,而是放到其它属性(data-src)中
+
+2.页面加载完成后,根据scrollTop判断图片是否在用户的视野内,如果在,则将data-original属性中的值取出存放到src属性中
+
+3.在滚动事件中重复判断图片是否进入视野;如果进入,则将data-original属性中的值取出存放到src属性中
+
+
 

@@ -13,12 +13,18 @@
 2.让搜索引擎更容易读懂（SEO(搜索引擎优化） 
 
 
+### H5是什么
+
+**H5，其实并不是一项技术，而是一项标准。H5是指第5代HTML，也指用H5语言制作的一切数字产品**
+
 
 ### Doctype
 
 Doctype声明于文档最前面，告诉浏览器以何种方式来解析文档，这里有两种模式，**标准模式**和**兼容模式**。
 
 在标准模式下，浏览器的解析规则都是按照最新的标准进行解析的。而在兼容模式下，浏览器会以向后兼容的方式来模拟老式浏览器的行为，以保证一些老的网站的正确访问。
+DOCTYPE不存在或格式不正确会导致文档以混杂模式呈现。
+
 
 
 ### 什么是 "use strict"？
@@ -151,6 +157,23 @@ footer 页脚
 
 
 
+### preload（立即下载） VS prefetch
+
+Preload 浏览器会在遇到如下link标签时，**立刻开始下载**main.js(不阻塞parser)，并放在内存中，但不会执行其中的JS语句。 只有当遇到script标签加载的也是main.js的时候，浏览器才会直接将预先加载的JS执行掉。
+
+```
+<link rel="preload" href="/main.js" as="script">
+```
+
+Prefetch 浏览器会在空闲的时候，下载main.js, 并缓存到disk。当有页面使用的时候，直接从disk缓存中读取。**其实就是把决定是否和什么时间加载这个资源的决定权交给浏览器。** 如果prefetch还没下载完之前，浏览器发现script标签也引用了同样的资源，浏览器会再次发起请求，这样会严重影响性能的，加载了两次，所以不要在当前页面马上就要用的资源上用prefetch，要用preload。
+
+```
+<link href="main.js" rel="prefetch">
+```
+
+
+
+
 ### 如何进行响应式开发
 
 - 移动端优先。由于移动端页面限制条件比较多，如视口面积小、网速慢、考虑 touch 事件等等因素，从移动端页面扩展到 PC 端页面要更容易一些
@@ -166,4 +189,20 @@ footer 页脚
 - XHTML 元素必须被关闭。
 - 标签名必须用小写字母。
 - XHTML 文档必须拥有根元素。
+
+
+ ### HTML5自定义标签
+
+浏览器对待自定义元素，就像对待标准元素一样，只是没有默认的样式和行为。
+
+事实上，浏览器提供了一个`HTMLUnknownElement`对象，所有自定义元素都是该对象的实例。
+
+```js
+var tabs = document.createElement('tabs');
+
+tabs instanceof HTMLUnknownElement // true
+tabs instanceof HTMLElement // true
+```
+
+
 
