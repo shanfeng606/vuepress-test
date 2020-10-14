@@ -127,13 +127,15 @@ footer 页脚
 
 特别的：video标签
 
-属性有：autoplay/preload:自动播放/预加载，controls控制条，muted静音
+属性有：autoplay/preload:自动播放/预加载，controls控制条，muted静音  
 **其他H5新特性**
 
 * 增强型表单：HTML5 拥有多个新的表单 Input 输入类型。这些新特性提供了更好的输入控制和验证。  
 
 * 视频和音频（video,audio）
 * Canvas绘图
+* websocket
+* 本地离线存储  localStorage，sessionStorage
 
 
 

@@ -211,6 +211,11 @@ Vuex是通过全局注入store对象，来实现组件间的状态共享。**Vue
 
 **视图通过点击事件，触发mutations中方法，可以更改state中的数据，一旦state数据发生更改，getters把数据反映到视图。**
 
+Action 类似于 mutation，不同在于：
+
+- Action 提交的是 mutation，而不是直接变更状态。
+- Action 可以包含任意异步操作。
+
 
 
 
@@ -355,11 +360,9 @@ vm.b = 2
 
 ```js
 Vue.set(vm.someObject, 'b', 2)
-```
 
 您还可以使用 `vm.$set` 实例方法，这也是全局 `Vue.set` 方法的别名：
 
-```js
 this.$set(this.someObject,'b',2)
 ```
 
@@ -369,6 +372,28 @@ this.$set(this.someObject,'b',2)
 // 代替 `Object.assign(this.someObject, { a: 1, b: 2 })`
 this.someObject = Object.assign({}, this.someObject, { a: 1, b: 2 })
 ```
+
+
+> 对于数组为实现响应式(set and splice)
+
+实现`vm.items[indexOfItem] = newValue`相同的效果
+
+```
+// Vue.set
+Vue.set(vm.items, indexOfItem, newValue)
+或者
+// Array.prototype.splice
+vm.items.splice(indexOfItem, 1, newValue)
+```
+
+实现`vm.items.length = newLength`相同的效果
+
+```
+vm.items.splice(newLength)
+```
+
+
+
 
 
 
@@ -468,8 +493,9 @@ v-model用于表单数据的双向绑定，其实它就是一个语法糖，这�
 
 ###  NextTick的理解⭐ 
 
-当你修改了data的值然后马上获取这个dom元素的值，是不能获取到更新后的值，
-你需要使用`$nextTick`这个回调，让修改后的data值渲染更新到dom元素之后在获取，才能成功。
+当你修改了data的值然后马上获取这个dom元素的值，是不能获取到更新后的值，  
+你需要使用`$nextTick`这个回调，让修改后的data值渲染更新到dom元素之后在获取，才能成功。  
+**理解：nextTick()，是将回调函数延迟在下一次dom更新数据后调用**，简单的理解是：**当数据更新了，在dom中渲染后，自动执行该函数，**
 
 使用
 
@@ -517,6 +543,35 @@ export default{
 .capture：与事件冒泡的方向相反，事件捕获由外到内；
 .self：只会触发自己范围内的事件，不包含子元素；
 .once：只会触发一次。
+
+
+### vue中的.sync修饰符用法及原理详解
+
+```js
+//父组件给子组件传入一个函数
+ <MyFooter :age="age" @setAge="(res)=> age = res">
+ </MyFooter>
+ //子组件通过调用这个函数来实现修改父组件的状态。
+ mounted () {
+      console.log(this.$emit('setAge',1234567));
+ }
+```
+
+```js
+//父组件将age传给子组件并使用.sync修饰符。
+<MyFooter :age.sync="age">
+</MyFooter>
+//子组件触发事件
+ mounted () {
+    console.log(this.$emit('update:age',1234567));
+ }
+```
+
+
+https://blog.csdn.net/liushijun_/article/details/92426854
+
+
+
 
 
 ### vue常用的命令
@@ -617,7 +672,25 @@ key的作用是key来给每个节点做一个唯一标识，辅助判断新旧vd
 
 **作用主要是为了更高效的更新虚拟DOM**
 
+当 Vue.js 用 `v-for` 正在更新已渲染过的元素列表时，它默认用“就地复用”策略。如果数据项的顺序被改变，Vue 将不会移动 DOM 元素来匹配数据项的顺序， 而是简单复用此处每个元素，并且确保它在特定索引下显示已被渲染过的每个元素。
 
+这里的就地复用的策略复用的是没有发生改变的元素，其他的还要依次重排。
+
+为了给 Vue 一个提示，以便它能跟踪每个节点的身份，从而重用和重新排序现有元素，你需要为每项提供一个唯一 `key` 属性。理想的 `key` 值是每项都有的唯一 id。
+
+所以我们需要使用key来给每个节点做一个唯一标识，Vue的Diff算法就可以正确的识别此节点，找到正确的位置区插入新的节点，所以一句话，**key的作用主要是为了高效的更新虚拟DOM**
+
+
+
+### 为什么不建议index作为key
+
+在工作中，发现很多人直接用index作为key，好像几乎没遇到过什么问题。确实，index作为key，在表现上确实几乎没有问题，但它主要有两点不足：
+1）index作为key，其实就等于不加key
+2）index作为key，只适用于不依赖子组件状态或临时 DOM 状态 (例如：表单输入值) 的列表渲染输出（这是vue官网的说明）
+
+https://www.jianshu.com/p/6e1ed6438dc9 这个写的很好
+
+https://www.cnblogs.com/youhong/p/11327062.html
 
 
 
@@ -642,6 +715,12 @@ window.onhashchange = function(event){
 
 - 利用了HTML5 History Interface 中新增的pushState()和replaceState()方法。
 - 需要后台配置支持。如果刷新时，服务器没有响应响应的资源，会刷出404
+
+缺点：
+
+hash携带的参数受url限制，不美观，hash只有设置新值才会被添加到栈中
+
+history需要后台的配置：你要在服务端增加一个覆盖所有情况的候选资源：如果 URL 匹配不到任何静态资源，则应该返回同一个 index.html 页面
 
 https://juejin.im/post/6844903695365177352#heading-2
 
@@ -707,7 +786,7 @@ Vue适用于尽可能小和块的项目
 首先 vue的点击事件 是用  @click = “clickfun()” 属性 在html中绑定的,
 在点击的函数中 添加$event 参数就可以
 比如
-<button  @click = “clickfun($event)”>点击</button>
+<button  @click ="clickfun($event)">点击<button>
 
 methods: {
     clickfun(e) {
@@ -716,4 +795,81 @@ methods: {
     }
   }
 ```
+
+### Vue的整个实现流程
+
+vue实现流程有以下4个步骤
+
+- **解析模板（本质是字符串）成render函数**
+
+模板中的所有信息被`render`函数包含，模板中用到的`data`中的属性，都变成了`JS`变量，模板中的`v-model v-for v-on`都变成了`JS`逻辑，`render`函数返回`VNode`.
+
+- **响应式开始监听**
+
+使用`Object.defineProperty`将data的属性代理到vm上。
+
+- **首次渲染，显示页面，绑定依赖**
+
+初次渲染，执行`updateComponent`，执行`vm._render()`，执行`render`函数，会访问到`vm.list vm.title`，会被响应式的get方法监听到。
+
+执行`updateComponent`,执行`vdom`的`patch`方法，将`VNode`渲染成`DOM`，初次渲染完成。
+
+监听`get`的原因，是为了避免不必要的重复渲染，data中只有触发get的才会被使用到。
+
+- **data属性变化，触发rerender**
+
+修改属性，被响应式的`set`监听到，`set`中执行`updateComponent`，重新执行`vm._render`，生成`VNode`和`prevVNode`，通过`patch`进行对比，渲染到`html`中
+
+https://blog.csdn.net/XiaChongYuFei/article/details/105464970?utm_medium=distribute.pc_relevant.none-task-blog-title-1&spm=1001.2101.3001.4242
+
+
+
+### Vue 的渲染
+
+1. new Vue，执行初始化
+2. 挂载`$mount`方法，通过自定义Render方法、template、el等生成Render函数
+3. 通过Watcher监听数据的变化
+4. 当数据发生变化时，Render函数执行生成VNode对象
+5. 通过patch方法，对比新旧VNode对象，通过DOM Diff算法，添加、修改、删除真正的DOM元素
+
+
+
+https://www.cnblogs.com/ypinchina/p/7238402.html
+
+
+
+
+
+### router 与 route的区别
+
+```
+在我们构建项目的过程中，会发现router和route，总是分不清楚。
+router：在我们进行路由跳转的时候，我们就会用到 router,用的方法就是
+this.$router.push({
+    name:'ddd'
+    path:'a/b'
+    query:{
+        id:1
+    }
+})
+
+route:当我们去取路径的参数值时。我们就用route，用的方式是：
+1. 以上跳转的路径取参数id ----------this.$route.query.id(相当于get请求)
+2.以router-link的方式跳转的页面， <router-link :to="aa/?name=Anin"></router-link>(相当于get请求)
+取值的时候：this.$route.query.name
+3.在配置路由的时候配置：path:'a/b/:id'(相当于post请求)
+ 取值的时候：this.$route.params.id
+```
+
+
+
+$route是“路由信息对象”，包括path，params，hash，query，fullPath，matched，name等路由信息参数。
+
+而$router是“路由实例”对象包括了路由的跳转方法，钩子函数等。
+
+
+
+
+
+
 

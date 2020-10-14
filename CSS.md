@@ -126,6 +126,7 @@ right: 0;
 
 ### flex 怎么用，常用属性有哪些？
 
+flex是弹性布局，可以有效的分配一个容器的空间  
 Flex属性  `flex-grow`（放大比例），`flex-shrink`(缩小比例)，和 `flex-basis` (占据空间) 属性  
 
 `order`(排列顺序)   `flex-direction`  主轴的方向  `flex-flow` 如果一排放不下如何换行
@@ -135,16 +136,15 @@ justify-content: flex-start | flex-end | center | space-around | space-between
 align-items: stretch | flex-start | flex-end | center
 flex-wrap: nowrap | wrap | wrap-reverse;
 ```
-flex兼容性问题
+flex默认 0 1 auto
+flex：1 ----->  1  1  0%
 
+flex兼容性问题  
 加前缀
 
 **-webkit-**         Safari/Chrome
-
 **-ms-**                IE
-
 **-moz-**              Firefox 
-
 https://cloud.tencent.com/developer/article/1532737
 
 
@@ -467,7 +467,7 @@ https://www.cnblogs.com/sarah-wen/p/10801002.html
 
 渲染线程分为main thread(主线程)和compositor thread(合成器线程)。
 
-**如果CSS动画只是改变`transform`和`opacity，`**`这时整个CSS动画得以在compositor thread完成（而JS动画则会在main thread执行，然后触发compositor进行下一步操作），所以，当在JS执行一些昂贵的任务时，main thread繁忙，CSS动画由于使用了compositor thread可以保持流畅。`
+**如果CSS动画只是改变`transform`和`opacity`，这时整个CSS动画得以在compositor thread完成（而JS动画则会在main thread执行，然后触发compositor进行下一步操作），所以，当在JS执行一些昂贵的任务时，main thread繁忙，CSS动画由于使用了compositor thread可以保持流畅。
 
 
 
@@ -514,6 +514,15 @@ https://www.cnblogs.com/sarah-wen/p/10801002.html
 
 伪类一般匹配的是元素的一些特殊状态，如hover、link等，而伪元素一般匹配的特殊的位置，比如after、before等。
 
+总结一下伪类与伪元素的特性及其区别：
+- 伪类本质上是为了弥补常规CSS选择器的不足，以便获取到更多信息；
+- 伪元素本质上是创建了一个有内容的虚拟容器；
+- CSS3中伪类和伪元素的语法不同，伪类的操作对象是文档树中已有的元素，而伪元素则创建了一个文档数外的元素；
+- 可以同时使用多个伪类，却只能同时使用一个伪元素；
+- 在CSS3中，伪类用单冒号:表示；而伪元素用双冒号::表示；
+
+
+
 
 ### link与import的区别
 
@@ -525,19 +534,20 @@ https://www.cnblogs.com/sarah-wen/p/10801002.html
 
 4，link支持JavaScript操作dom方式去改变样式，而@import则不支持。
 
+
 ### CSS设置链接样式顺序
 
 正确顺序：“爱恨原则”（LoVe/HAte），即四种伪类的首字母:LVHA。再重复一遍正确的顺序：a:link、a:visited、a:hover、a:active .
 
 解析：a:link,a:visited,a:hover,a:active 分别是什么意思?  
 
-      1. link:连接平常的状态  
+1. link:连接平常的状态  
 
-      2. visited:连接被访问过之后  
+2. visited:连接被访问过之后  
 
-      3. hover:鼠标放到连接上的时候  
+3. hover:鼠标放到连接上的时候  
 
-   4. active:连接被按下的时候
+4. active:连接被按下的时候
 
 
 
@@ -655,4 +665,39 @@ obj.offsetLeft //IE firefox
 - **避免频繁操作样式**，最好一次性重写`style`属性，或者将样式列表定义为`class`并一次性更改`class`属性。
 - **避免频繁操作`DOM`**，创建一个`documentFragment`，在它上面应用所有`DOM操作`，最后再把它添加到文档中。
 - **避免频繁读取会引发回流/重绘的属性**，如果确实需要多次使用，就用一个变量缓存起来。
+
+
+
+### 解决CSS命名问题的方案
+
+* BEM 让命名有规律、有含义，block 可视为模块，有一定作用域含义
+* scoped css 限定 css 作用域，无关命名。无法适配多套主题
+* css modules 使用算法命名，没有了命名冲突，也限定了 css 作用域。无法适配多套主题
+* css-in-js 使用算法命名，拥有 css modules 的优势。同时将 css 视为 js 的字符串，赋予 css 更多能力
+
+
+
+
+### margin重叠问题（面试题）
+
+```
+<div class='b'>
+	<div class="a"></div>
+</div>
+  
+.b{
+  background:green;
+}
+.a{
+  margin-top:50px;
+  height:100px;
+  width:100px;
+  background:red;
+}  
+  
+```
+
+结果：a，b 都距离上边50px;
+
+
 

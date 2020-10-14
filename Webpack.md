@@ -12,6 +12,7 @@ webpack是一个**模块打包器**（module bundler），webpack视HTML，JS，
 2. 编译：从 入口Entry 发出，针对每个模块Module 串行调用对应的 Loader 去翻译文件内容，再找到该 Module 依赖的 Module，递归地进行编译处理。
 3. 输出：对编译后的 模块（Module） 组合成 代码块（Chunk），把 Chunk 转换成文件，输出到文件系统。
 
+Webpack在启动后，会从Entry开始，递归解析Entry依赖的所有Module，每找到一个Module，就会根据Module.rules里配置的Loader规则进行相应的转换处理，对Module进行转换后，再解析出当前Module依赖的Module，这些Module会以Entry为单位进行分组，即为一个Chunk。**因此一个Chunk，就是一个Entry及其所有依赖的Module合并的结果。**最后Webpack会将所有的Chunk转换成文件输出Output。在整个构建流程中，Webpack会在恰当的时机执行Plugin里定义的逻辑，从而完成Plugin插件的优化任务。
 
 
 https://juejin.im/entry/6844903614469636103

@@ -10,14 +10,10 @@ let const 展开运算符 解构赋值 模块导入导出 class继承 promise sy
 
 ### ES6中数组的新方法
 
-1、扩展运算符 ...
-
-2、Array.from()
-
-3、Array,of()    `Array.of`方法用于将一组值，转换为数组。   Array.of(3, 11, 8) // [3,11,8]
-
-4、fill() 填充数组
-
+1、扩展运算符 ...  
+2、Array.from()  
+3、Array,of()    `Array.of`方法用于将一组值，转换为数组。     Array.of(3, 11, 8) // [3,11,8]  
+4、fill() 填充数组  
 5、find() 和 findindex()
 
 ```
@@ -75,6 +71,14 @@ var a = 1
 
 2、声明提升还可以提高JS代码的容错性，使一些不规范的代码也可以正常执行
 
+为什么要使用let
+
+* let 不会在全局对象中新建一个属性
+* 在处理构造函数的时候，可以通过`let`声明而不是闭包来创建一个或多个私有成员。
+* 更好的报错机制，在同一个函数或块作用域中重复声明同一个变量会引起`SyntaxError`
+
+
+
 
 ### 为什么0.1+0.2！==0.3
 
@@ -88,7 +92,6 @@ var a = 1
 "==" 就代表会先把两端的变量试图转换成相同类型，然后再比较；
 
 "===" 就代表会直接去比较类型是否相同，如果类型相同则继续比较值是否相同。
-
 
 
 ==操作符的强制类型转换规则，看看就好
@@ -216,15 +219,19 @@ some() 和 every() 方法不会改变原始数组。
   原始类型存储的都是值，是没有函数可以调用的，`typeof null`会输出`object`，是JS存在的一个bug
 
 
-
 （一共有8种数据类型，其中7种是原始类型）
-
 
 
 栈：原始数据类型（Undefined、Null、Boolean、Number、String）
 
 堆：引用数据类型（对象、数组和函数）
 string：基本包装类型
+
+
+### javascript中的几个假值
+
+**false,null,undefined,0,”(空字符串),NaN**
+
 
 
 ### 基本类型跟引用类型的区别
@@ -267,6 +274,16 @@ console.log(date instanceof Date ); // true
 console.log(fn instanceof Function ); // true
 //注意： instanceof 后面一定要是对象类型，大小写不能写错，该方法试用一些条件选择或分支
 ```
+**缺点**
+
+instanceof检测的是原型，不能完全精确的判断object类的具体数据类型，比如：
+
+```
+console.log([] instanceof Object)   //true
+console.log([] instanceof Array)    //true
+```
+
+
 
 
 
@@ -297,7 +314,7 @@ Object.prototype.toString.call( null );			// "[object Null]"
 Object.prototype.toString.call( undefined );	// "[object Undefined]"
 ```
 
-虽然 JavaScript 中没有`Null()`和`Undefined`构造器，但是 JavaScript 也为我们处理这这两种情况。
+虽然 JavaScript 中没有`Null()`和`Undefined`构造器，但是 JavaScript 也为我们处理这这两种情况。  
 **原理**
 
 **所有类在继承Object的时候，改写了toString()方法。** Object原型上的方法是可以输出数据类型的。因此我们想判断数据类型时，也只能使用原始方法。继而有了此方法：`Object.prototype.toString.call(obj)`
@@ -596,6 +613,7 @@ Promise 实例具有`then`方法，也就是说，`then`方法是定义在原型
 
 ### proxy的理解
 
+Proxy 可以理解成，在目标对象之前架设一层**“拦截”**，外界对该对象的访问，都必须先通过这层拦截，因此提供了一种机制，可以对外界的访问进行过滤和改写。Proxy 这个词的原意是代理，用在这里表示由它来“代理”某些操作，可以译为“代理器”。  
 proxy代理，扩展（增强）对象的一些功能：比如Vue中拦截等
 
 ```js
@@ -794,6 +812,10 @@ window.onerror=function(message,source,lineNum,colNum,error){
 
 ### requestAnimationFrame的优势是什么？
 
+浏览器可以优化并行的动画动作，更合理的重新排列动作序列，并把能够合并的动作放在一个渲染周期内完成，从而呈现出更流畅的动画效果，节省CPU。
+应用场景：游戏、动画
+
+
 告诉浏览器——你希望执行一个动画，并且要求浏览器在下次重绘之前调用指定的回调函数更新动画。不需要设置时间间隔，是由系统的时间间隔定义的。大多数浏览器的刷新频率是60Hz(每秒钟反复绘制60次)，循环间隔是1000/60，约等于16.7ms。不需要调用者指定帧速率，**浏览器会自行决定最佳的帧效率**。只被执行一次，这样就不会引起丢帧现象，也不会导致动画出现卡顿的问题。
 
 **语法**：
@@ -931,6 +953,13 @@ var deepEqual = function (x, y) {
 }
 ```
 
+### 判断一个数组
+
+* instanceof操作符
+
+* 对象的constructor属性
+* Object.prototype.toString
+* Array.isArray()
 
 
 
@@ -965,5 +994,43 @@ var deepEqual = function (x, y) {
 
 3.在滚动事件中重复判断图片是否进入视野;如果进入,则将data-original属性中的值取出存放到src属性中
 
+
+### JS输出信息的5种方式
+
+```
+alert()方法
+confirm()方法
+conlose.log()方法
+document.write()方法
+prompt()方法
+```
+
+
+
+
+
+### 实现数组相加的方法
+
+方法一：
+
+```
+function sum(arr){
+   return eval(arr.join('+'));
+}
+```
+
+方法二：各种遍历，forEach遍历：
+
+方法三：reduce
+
+```
+function sumArr(arr){
+        return arr.reduce(function(prev,cur){
+            return prev + cur;
+        },0);
+}
+//reduce方法有两个参数，一个是callbackfunction(回调函数)，
+//二是设置prev的初始类型和初始值
+```
 
 
